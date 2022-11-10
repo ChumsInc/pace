@@ -16,3 +16,6 @@ export const months:Month[] = [
     {value: '11', name: 'January'},
     {value: '12', name: 'January'},
 ]
+
+export const divisionPath = '/:arDivisionNo';
+export const segmentPath = '/:arDivisionNo/:segment';

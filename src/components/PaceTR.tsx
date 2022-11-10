@@ -1,38 +1,61 @@
 import React from 'react';
 import {PaceRow} from "../types";
 import Decimal from "decimal.js";
-import numeral from "numeral";
-import {numeralFormat} from "../app/constants";
-import classNames from "classnames";
 import NumericTD from "./NumericTD";
+import numeral from "numeral";
+import TableCell from '@mui/material/TableCell';
+import TableRow, {TableRowProps} from '@mui/material/TableRow';
+import IconButton from "@mui/material/IconButton";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
 
 export interface PaceRowProps {
     link: React.ReactNode;
-    description: string;
+    description: React.ReactNode;
     pace: PaceRow;
     goal?: number | string;
-    invoiced?: number | string;
-    current?: number | string;
+    showPercent?: boolean;
     toggled?: boolean;
-    onToggle?: () => void
+    onToggle?: () => void;
+    trProps?: TableRowProps
 }
 
-const PaceTR = ({link, description, pace, goal, invoiced, current, toggled, onToggle}: PaceRowProps) => {
-    const _invoiced = new Decimal(invoiced ?? pace.InvoiceTotal).add(current ?? pace.CurrentInvoiceTotal);
-    const _pace = new Decimal(invoiced ?? pace.InvoiceTotal).add(current ?? pace.CurrentInvoiceTotal)
-        .add(pace.OpenOrderTotal).add(pace.PrevOpenOrderTotal).add(pace.HeldOrderTotal);
+const PaceTR = ({
+                    link,
+                    description,
+                    pace,
+                    goal,
+                    showPercent,
+                    toggled,
+                    onToggle,
+                    trProps
+                }: PaceRowProps) => {
     return (
-        <tr>
-            {onToggle !== undefined && (<td><span className={classNames({'bi-caret-right': !toggled, 'bi-cart-down-fill': toggled})} /></td>)}
-            <td>{link}</td>
-            <td>{description}</td>
-            <NumericTD value={_invoiced} />
-            <NumericTD value={pace.OpenOrderTotal} />
-            <NumericTD value={pace.PrevOpenOrderTotal} />
-            <NumericTD value={pace.HeldOrderTotal} />
-            <NumericTD value={_pace} />
-            {goal !== undefined && (<NumericTD value={goal} />)}
-        </tr>
+        <TableRow {...trProps}>
+            <TableCell>
+                {!!onToggle && (
+                    <IconButton aria-label="expand row" size="small" onClick={onToggle}>
+                        {toggled ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+                    </IconButton>
+                )}
+            </TableCell>
+            <TableCell>{link}</TableCell>
+            <TableCell>{description}</TableCell>
+            <NumericTD value={pace.InvoiceTotal}/>
+            <NumericTD value={pace.OpenOrderTotal}/>
+            <NumericTD value={pace.PrevOpenOrderTotal}/>
+            <NumericTD value={pace.HeldOrderTotal}/>
+            <NumericTD value={pace.Pace}/>
+            {goal !== undefined && Number(goal) !== 0 && (<NumericTD value={goal}/>)}
+            {goal !== undefined && Number(goal) === 0 && (<TableCell/>)}
+            {showPercent && goal !== undefined && Number(goal) !== 0 && (
+                <TableCell className="text-end">
+                    {numeral(new Decimal(pace.Pace).div(goal).toString()).format('0,0.0%')}
+                </TableCell>
+            )}
+            {!showPercent && goal !== undefined && Number(goal) === 0 && (<TableCell align="right"/>)}
+        </TableRow>
     )
 }
 

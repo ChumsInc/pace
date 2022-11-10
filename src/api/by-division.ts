@@ -1,18 +1,16 @@
-import {DivisionPaceRow, PaceResponse, SlowPaceResponse} from "../types";
+import {DivisionPaceResponse, SlowPaceResponse} from "../types";
 import {fetchJSON} from "chums-components/dist/fetch";
 
-const paceByDivisionURL = '/api/sales/pace/chums/:year/:month';
-const slowPaceByDivisionURL = '/node-sage/api/CHI/pace/invoiced/:year/:month';
+const paceByDivisionURL = '/api/sales/pace/chums/:year-:month';
+const slowPaceByDivisionURL = '/sage/api/pace/by-division.php';
 
-
-export async function fetchByDivision(year:string, month:string):Promise<DivisionPaceRow[]> {
+export async function fetchByDivision(year: string, month: string): Promise<DivisionPaceResponse> {
     try {
         const url = paceByDivisionURL
             .replace(':year', encodeURIComponent(year))
             .replace(':month', encodeURIComponent(month));
-        const {pace} = await fetchJSON<PaceResponse>(url);
-        return pace ?? [];
-    } catch(err:unknown) {
+        return await fetchJSON<DivisionPaceResponse>(url);
+    } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchByDivision()", err.message);
             return Promise.reject(err);
@@ -23,13 +21,15 @@ export async function fetchByDivision(year:string, month:string):Promise<Divisio
 
 }
 
-export async function fetchSlowByDivision(year:string, month: string):Promise<SlowPaceResponse> {
+export async function fetchSlowByDivision(year: string, month: string): Promise<SlowPaceResponse> {
     try {
-        const url = slowPaceByDivisionURL
-            .replace(':year', encodeURIComponent(year))
-            .replace(':month', encodeURIComponent(month));
+        const query = new URLSearchParams();
+        query.set('year', year);
+        query.set('month', month);
+
+        const url = `${slowPaceByDivisionURL}?${query.toString()}`;
         return await fetchJSON<SlowPaceResponse>(url);
-    } catch(err:unknown) {
+    } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchSlowByDivision()", err.message);
             return Promise.reject(err);
@@ -38,4 +38,3 @@ export async function fetchSlowByDivision(year:string, month: string):Promise<Sl
         return Promise.reject(new Error('Error in fetchSlowByDivision()'));
     }
 }
-

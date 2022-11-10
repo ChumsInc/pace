@@ -1,12 +1,20 @@
 import {configureStore} from '@reduxjs/toolkit'
 import {combineReducers} from "redux";
-import byDivisionReducer from "../ducks/byDivision";
+import divisionReducer from "../ducks/division";
 import appReducer from "../ducks/app";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
+import segmentReducer from "../ducks/segment";
+import segmentsReducer from "../ducks/segment-list";
+import customerReducer from "../ducks/customer";
+import profileReducer from "../ducks/profile";
 
 const rootReducer = combineReducers({
     app: appReducer,
-    byDivision: byDivisionReducer,
+    division: divisionReducer,
+    segment: segmentReducer,
+    customer: customerReducer,
+    segments: segmentsReducer,
+    profile: profileReducer,
 })
 
 const store = configureStore({

@@ -14,6 +14,6 @@ $title = "Pace Report";
 
 $ui = new WebUI($bodyPath, $title, '', true, 5);
 
-//$ui->AddCSS("public/bin-location.css?v={$ui->version}");
+$ui->AddCSS("public/pace.css");
 $ui->addManifest('public/js/manifest.json');
 $ui->Send();

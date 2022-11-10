@@ -1,4 +1,4 @@
-import {createAction, createReducer} from "@reduxjs/toolkit";
+import {createAction, createReducer, createSelector} from "@reduxjs/toolkit";
 import {RootState} from "../../app/configureStore";
 
 export interface AppState {
@@ -16,6 +16,10 @@ export const setMonth = createAction<string>('app/setMonth');
 
 export const selectYear = (state:RootState) => state.app.year;
 export const selectMonth = (state:RootState) => state.app.month;
+export const selectDates = createSelector(
+    [selectYear, selectMonth],
+    (year, month) => ({year, month})
+)
 
 const appReducer = createReducer(initialAppState, (builder) => {
     builder

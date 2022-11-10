@@ -1,18 +1,15 @@
-import {DivisionPaceRow, SlowPaceResponse} from "../../types";
+import {DivisionPaceRow, PaceState, SlowDivisionPaceRow, SlowPace} from "../../types";
 import {createReducer} from "@reduxjs/toolkit";
-import {loadByDivision, slowLoadByDivision} from "./actions";
+import {loadByDivision, slowLoadByDivision, toggleExpanded} from "./actions";
+import {getPreference, localStorageKeys, setPreference} from "../../api/preferences";
 
 
-export interface ByDivisionState {
-    year: string | null;
-    month: string | null;
+export interface ByDivisionState extends PaceState {
     pace: DivisionPaceRow[];
-    slowPace: SlowPaceResponse;
-    loaded: string | null;
-    fastLoading: boolean;
-    slowLoading: boolean;
-    fastError: string|null;
-    slowError: string|null;
+    slowPace: SlowPace<SlowDivisionPaceRow>;
+    expanded: {
+        [key: string]: boolean;
+    }
 }
 
 export const initialByDivisionState: ByDivisionState = {
@@ -25,10 +22,13 @@ export const initialByDivisionState: ByDivisionState = {
     slowLoading: false,
     fastError: null,
     slowError: null,
+    expanded: {
+        ...getPreference(localStorageKeys.divisionExpanded, {})
+    }
 }
 
 
-const byDivisionReducer = createReducer(initialByDivisionState, (builder) => {
+const divisionReducer = createReducer(initialByDivisionState, (builder) => {
     builder
         .addCase(loadByDivision.pending, (state, action) => {
             if (action.meta.arg.year !== state.year || action.meta.arg.month !== state.month) {
@@ -41,10 +41,10 @@ const byDivisionReducer = createReducer(initialByDivisionState, (builder) => {
             state.fastError = null;
         })
         .addCase(loadByDivision.fulfilled, (state, action) => {
-            state.pace = action.payload ?? [];
+            state.pace = action.payload.pace ?? [];
+            state.loaded = action.payload.timestamp;
             state.fastLoading = false;
             state.fastError = null;
-            state.loaded = new Date().toISOString();
         })
         .addCase(loadByDivision.rejected, (state, action) => {
             state.fastLoading = false;
@@ -58,13 +58,19 @@ const byDivisionReducer = createReducer(initialByDivisionState, (builder) => {
             state.slowError = null;
         })
         .addCase(slowLoadByDivision.fulfilled, (state, action) => {
-            state.slowPace = action.payload ?? {}
+            state.slowPace = action.payload.invoiced;
+            state.loaded = action.payload.timestamp;
             state.slowLoading = false;
-            state.loaded = new Date().toISOString();
+            state.slowError = null;
         })
         .addCase(slowLoadByDivision.rejected, (state, action) => {
+            state.slowLoading = false;
             state.slowError = action.error?.message ?? null;
+        })
+        .addCase(toggleExpanded, (state, action) => {
+            state.expanded[action.payload] = !state.expanded[action.payload];
+            setPreference(localStorageKeys.divisionExpanded, state.expanded);
         })
 })
 
-export default byDivisionReducer;
+export default divisionReducer;

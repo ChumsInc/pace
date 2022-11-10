@@ -1,27 +1,31 @@
 import React from 'react';
 import YearSelect from "./YearSelect";
 import MonthSelect from "./MonthSelect";
-import DivisionReloadButton from "../byDivision/DivisionReloadButton";
+import ReloadButton from "../../components/ReloadButton";
+import Stack from '@mui/material/Stack'
+import {useParams} from "react-router-dom";
+import DivisionTitle from "../division/DivisionTitle";
+import CustomerTitle from "../customer/CustomerTitle";
+
 
 const AppBar = () => {
+    const {arDivisionNo} = useParams<'arDivisionNo' | 'segment'>()
     return (
-        <div className="row g-3">
-            <div className="col-auto">
-                <div className="input-group">
-                    <div className="input-group-text">Year</div>
-                    <YearSelect/>
-                </div>
+        <Stack direction="row" spacing={2} sx={{my: '2rem'}} alignItems="top">
+            <div style={{flex: '1 1 auto'}}>
+                {!arDivisionNo && (<DivisionTitle/>)}
+                {!!arDivisionNo && (<CustomerTitle/>)}
             </div>
-            <div className="col-auto">
-                <div className="input-group">
-                    <div className="input-group-text">Month</div>
-                    <MonthSelect/>
-                </div>
+            <div>
+                <YearSelect/>
             </div>
-            <div className="col-auto">
-                <DivisionReloadButton/>
+            <div>
+                <MonthSelect/>
             </div>
-        </div>
+            <div>
+                <ReloadButton/>
+            </div>
+        </Stack>
     )
 }
 
