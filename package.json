@@ -1,6 +1,6 @@
 {
   "name": "pace",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "CHUMS Pace Report",
   "main": "index.js",
   "author": "Steve Montgomery",
