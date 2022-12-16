@@ -23,6 +23,9 @@ export const slowLoadByDivision = createAsyncThunk<SlowPacePayload<SlowDivisionP
             slowPace[row.ARDivisionNo] = row;
         });
         currentInvoiced?.forEach(row => {
+            if (!slowPace[row.ARDivisionNo]) {
+                slowPace[row.ARDivisionNo] = {ARDivisionNo: row.ARDivisionNo, InvoiceTotal: 0};
+            }
             slowPace[row.ARDivisionNo].InvoiceTotal = new Decimal(slowPace[row.ARDivisionNo]?.InvoiceTotal ?? 0).add(row.InvoiceTotal).toString();
         });
         return {

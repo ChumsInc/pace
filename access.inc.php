@@ -1,2 +1,2 @@
 <?php
-$allowedGroups = array(User::GROUP_SALES);
+$allowedGroups = array(User::GROUP_PACE);
