@@ -25,7 +25,7 @@ export async function fetchSlowByDivision(year: string, month: string): Promise<
     try {
         const query = new URLSearchParams();
         query.set('year', year);
-        query.set('month', month);
+        query.set('month', Number(month).toString());
 
         const url = `${slowPaceByDivisionURL}?${query.toString()}`;
         return await fetchJSON<SlowPaceResponse>(url);

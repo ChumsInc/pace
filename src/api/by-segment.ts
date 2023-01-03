@@ -48,7 +48,7 @@ export async function fetchSlowBySegment(year: string, month: string): Promise<S
     try {
         const query = new URLSearchParams();
         query.set('year', year);
-        query.set('month', month);
+        query.set('month', Number(month).toString());
 
         const url = `${slowPaceBySegmentURL}?${query.toString()}`;
         return await fetchJSON<SlowPaceResponse<SlowSegmentPaceRow>>(url);

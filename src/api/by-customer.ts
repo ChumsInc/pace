@@ -27,7 +27,7 @@ export async function fetchSlowByCustomer(year: string, month: string, ARDivisio
     try {
         const query = new URLSearchParams();
         query.set('year', year);
-        query.set('month', month);
+        query.set('month', Number(month).toString());
         query.set('ARDivisionNo', ARDivisionNo);
 
         const url = `${slowPaceByCustomerURL}?${query.toString()}`;
