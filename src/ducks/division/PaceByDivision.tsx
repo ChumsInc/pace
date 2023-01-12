@@ -100,7 +100,7 @@ const PaceByDivision = () => {
                                         description={<DivisionLink
                                             arDivisionNo={row.ARDivisionNo}>{row.ARDivisionDesc}</DivisionLink>}
                                         pace={row}
-                                        goal={row.goal}
+                                        goal={row.goal ?? 0}
                                         toggled={expanded[row.ARDivisionNo]}
                                         onToggle={() => toggleHandler(row.ARDivisionNo)}
                                         showPercent
@@ -114,7 +114,7 @@ const PaceByDivision = () => {
                     <TableFooter>
                         <PaceTR link={'Total'} description={'Chums Total'} pace={total}
                                 goal={total.goal} showPercent
-                                trProps={{sx: {'& > td': {fontWeight: 700, fontSize: '1rem'}}}}/>
+                                trProps={{sx: {'& > td': {fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap'}}}}/>
 
                     </TableFooter>
                 </Table>

@@ -22,7 +22,7 @@ const App = () => {
 
 
     return (
-        <div className="container">
+        <div className="container-xl">
             <ErrorBoundary>
                 <Routes>
                     <Route path="/" element={<AppContent/>}>

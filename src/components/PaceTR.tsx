@@ -50,9 +50,12 @@ const PaceTR = ({
             {goal !== undefined && Number(goal) !== 0 && (<NumericTD value={goal}/>)}
             {goal !== undefined && Number(goal) === 0 && (<TableCell/>)}
             {showPercent && goal !== undefined && Number(goal) !== 0 && (
-                <TableCell className="text-end">
+                <TableCell align="right">
                     {numeral(new Decimal(pace.Pace).div(goal).toString()).format('0,0.0%')}
                 </TableCell>
+            )}
+            {showPercent && !goal && (
+                <TableCell align="right" />
             )}
             {!showPercent && goal !== undefined && Number(goal) === 0 && (<TableCell align="right"/>)}
         </TableRow>

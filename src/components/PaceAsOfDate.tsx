@@ -1,5 +1,13 @@
 import React from 'react';
 
+const friendlyDate = (d:Date|string|number) => {
+    const date = new Date(d);
+    const now = new Date();
+    if (date.toDateString() === now.toDateString()) {
+        return date.toLocaleTimeString();
+    }
+    return d.toLocaleString();
+}
 export interface PaceAsOfDateProps {
     updated: string|null;
 }
@@ -9,7 +17,7 @@ const PaceAsOfDate = ({updated}:PaceAsOfDateProps) => {
         return null;
     }
     return (
-        <span className="text-muted">Last Updated: {new Date(updated).toLocaleString()}</span>
+        <span className="text-muted"><span className="d-none d-md-inline">Last Updated:</span>  {friendlyDate(new Date(updated))}</span>
     )
 }
 
