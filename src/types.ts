@@ -1,5 +1,5 @@
-import {SortProps} from "chums-components/dist/types";
-import {PublicUserProps} from "chums-types";
+import {SortProps} from "chums-components";
+import {UserProfile} from "chums-types";
 
 export interface Month {
     value: string;
@@ -135,7 +135,7 @@ export interface CustomerSort extends SortProps {
 
 export interface UserValidationResponse {
     valid?: boolean;
-    profile?: PublicUserProps;
+    profile?: UserProfile;
     roles?: boolean;
     loaded: string;
 }

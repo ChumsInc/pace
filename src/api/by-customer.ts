@@ -1,5 +1,5 @@
 import {CustomerPaceResponse, SlowCustomerPaceRow, SlowPaceResponse} from "../types";
-import {fetchJSON} from "chums-components/dist/fetch";
+import {fetchJSON} from "chums-components";
 
 
 const paceByCustomerURL = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/customer';
