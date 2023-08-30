@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useAppDispatch} from "../../app/configureStore";
+import {useAppDispatch, useAppSelector} from "../../app/configureStore";
 import {useSelector} from "react-redux";
 import {selectFastError, selectCustomersLoaded, selectPace, selectSlowError, selectSlowPace, selectSort} from "./selectors";
 import {customerPaceSorter, paceReducer, paceRow, zeroTotal} from "../../utils";
@@ -146,8 +146,8 @@ const PaceByCustomer = () => {
                 <Table size="small">
                     <TableHead>
                         <TableRow sx={{'& > th': {fontWeight: 700, fontSize: '1rem', color: 'var(--bs-body-color)'}}}>
-                            {fields.map(row => (
-                                <TableCell {...row.cellProps}>
+                            {fields.map((row, index) => (
+                                <TableCell key={index} {...row.cellProps}>
                                     <TableSortLabel
                                         active={sort.field === row.field}
                                         direction={sort.field === row.field ? (sort.ascending ? 'asc' : 'desc') : 'asc'}
@@ -160,9 +160,9 @@ const PaceByCustomer = () => {
                     </TableHead>
                     <TableBody>
                         {sorted.map(row => (
-                            <TableRow>
-                                {fields.map(field => (
-                                    <TableCell {...field.cellProps}>
+                            <TableRow key={customerKey(row)}>
+                                {fields.map((field, index) => (
+                                    <TableCell key={index} {...field.cellProps}>
                                         {!!field.render && (
                                             <>{field.render(row)}</>
                                         )}

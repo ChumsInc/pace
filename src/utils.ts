@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import {CustomerPaceRow, CustomerSort, PaceRow, SlowPace} from "./types";
+import {CustomerKey, CustomerPaceRow, CustomerSort, PaceRow, SlowPace} from "./types";
 import {customerKey} from "./ducks/customer/utils";
 
 export const paceReducer = (pv: PaceRow, cv: PaceRow) => {
