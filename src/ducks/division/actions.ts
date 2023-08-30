@@ -2,6 +2,8 @@ import {createAction, createAsyncThunk} from "@reduxjs/toolkit";
 import {DivisionPaceResponse, PaceArgs, SlowDivisionPaceRow, SlowPace, SlowPacePayload} from "../../types";
 import {fetchByDivision, fetchSlowByDivision} from "../../api/by-division";
 import Decimal from "decimal.js";
+import {RootState} from "../../app/configureStore";
+import {selectFastPaceLoading, selectSlowPaceLoading} from "./selectors";
 
 export const loadByDivision = createAsyncThunk<DivisionPaceResponse, PaceArgs>(
     'by-division/load',
@@ -10,6 +12,12 @@ export const loadByDivision = createAsyncThunk<DivisionPaceResponse, PaceArgs>(
         return {
             pace,
             timestamp: new Date().toISOString(),
+        }
+    },
+    {
+        condition: (arg, {getState}) => {
+            const state = getState() as RootState;
+            return !selectFastPaceLoading(state);
         }
     }
 )
@@ -31,6 +39,12 @@ export const slowLoadByDivision = createAsyncThunk<SlowPacePayload<SlowDivisionP
         return {
             invoiced: slowPace,
             timestamp: new Date().toISOString(),
+        }
+    },
+    {
+        condition: (arg, {getState}) => {
+            const state = getState() as RootState;
+            return !selectSlowPaceLoading(state);
         }
     }
 )

@@ -5,6 +5,7 @@ import {RootState} from "../../app/configureStore";
 import Decimal from "decimal.js";
 import {selectSegmentsList} from "../segment-list";
 import {segmentKey} from "./utils";
+import {selectFastPaceLoading} from "./selectors";
 
 export const loadBySegment = createAsyncThunk<SegmentPaceResponse, PaceArgs>(
     'by-segment/load',
@@ -13,6 +14,12 @@ export const loadBySegment = createAsyncThunk<SegmentPaceResponse, PaceArgs>(
         return {
             pace,
             timestamp: new Date().toISOString(),
+        }
+    },
+    {
+        condition: (arg, {getState}) => {
+            const state = getState() as RootState;
+            return !selectFastPaceLoading(state);
         }
     }
 )
@@ -47,5 +54,12 @@ export const slowLoadBySegment = createAsyncThunk<SlowPacePayload<SlowSegmentPac
             invoiced: response,
             timestamp: new Date().toISOString(),
         };
+    },
+    {
+        condition: (arg, {getState}) => {
+            const state = getState() as RootState;
+            return !selectFastPaceLoading(state);
+        }
     }
+
 )

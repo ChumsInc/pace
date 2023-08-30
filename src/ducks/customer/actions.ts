@@ -12,6 +12,7 @@ import {RootState} from "../../app/configureStore";
 import {selectSegmentsList} from "../segment-list";
 import {customerKey} from "./utils";
 import Decimal from "decimal.js";
+import {selectFastPaceLoading, selectSlowPaceLoading} from "./selectors";
 
 export const setSort = createAction<CustomerSort>('customers/sort');
 
@@ -22,6 +23,12 @@ export const loadCustomers = createAsyncThunk<CustomerPaceResponse, PaceArgs>(
         return {
             pace,
             timestamp: new Date().toISOString(),
+        }
+    },
+    {
+        condition: (arg, {getState}) => {
+            const state = getState() as RootState;
+            return !selectFastPaceLoading(state);
         }
     }
 )
@@ -52,5 +59,11 @@ export const slowLoadCustomers = createAsyncThunk<SlowPacePayload<SlowCustomerPa
             invoiced: response,
             timestamp: new Date().toISOString(),
         };
+    },
+    {
+        condition: (arg, {getState}) => {
+            const state = getState() as RootState;
+            return !selectSlowPaceLoading(state);
+        }
     }
 )

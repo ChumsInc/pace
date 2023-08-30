@@ -123,7 +123,7 @@ const PaceByCustomer = () => {
         const total = sorted.reduce(paceReducer, zeroTotal);
         setSorted(sorted);
         setTotal(total);
-    }, [arDivisionNo, segment, sort, loaded]);
+    }, [pace, arDivisionNo, segment, sort, loaded]);
 
     useEffect(() => {
         if (!valid) {

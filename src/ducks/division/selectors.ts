@@ -20,10 +20,15 @@ export const selectExpanded = (state: RootState) => state.division.expanded;
 export const selectFastError = (state: RootState) => state.division.fastError;
 export const selectSlowError = (state: RootState) => state.division.slowError;
 
-export const selectDivisions = (state: RootState): Division[] => {
-    return state.division.pace
-        .map(({ARDivisionNo, ARDivisionDesc}) => ({
-            ARDivisionNo,
-            ARDivisionDesc
-        }));
-}
+export const selectDivisions = createSelector(
+    [selectPace],
+    (pace) => {
+        return pace.map(div => {
+            const {ARDivisionNo, ARDivisionDesc} = div;
+            return {
+                ARDivisionNo,
+                ARDivisionDesc
+            } as Division
+        })
+    }
+)

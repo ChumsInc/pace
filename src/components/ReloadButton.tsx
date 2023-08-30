@@ -33,11 +33,11 @@ const ReloadButton = () => {
 
         if (params.arDivisionNo) {
             dispatch(loadCustomers({...dates, ARDivisionNo: params.arDivisionNo}));
-            if (dates.year === currentYear && dates.month === currentYear) {
+            if (dates.year === currentYear && dates.month === currentMonth) {
                 dispatch(slowLoadCustomers({...dates, ARDivisionNo: params.arDivisionNo}));
             }
         } else {
-            if (dates.year === currentYear && dates.month === currentYear) {
+            if (dates.year === currentYear && dates.month === currentMonth) {
                 dispatch(slowLoadByDivision({...dates}));
             }
             if (Object.keys(expanded).length && Object.values(expanded).filter(val => val).length) {
