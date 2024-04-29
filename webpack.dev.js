@@ -1,7 +1,6 @@
 const {merge} = require('webpack-merge');
 const common = require('./webpack.common.js');
 const path = require('path');
-const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 
 const localProxy = {
@@ -26,7 +25,10 @@ module.exports = merge(common, {
         ],
         hot: true,
         proxy: [
-            {context: ['/api', '/sage'], ...localProxy}
+            {
+                context: ['/api', '/images', '/node-modules', '/sage', '/version'],
+                ...localProxy
+            }
         ],
         watchFiles: 'src/**/*',
     },
