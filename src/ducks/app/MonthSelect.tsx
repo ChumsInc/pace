@@ -1,42 +1,42 @@
-import React, {useId} from 'react';
+import React, {ChangeEvent, useId} from 'react';
 import {useAppDispatch} from "../../app/configureStore";
 import {useSelector} from "react-redux";
 import {selectMonth, setMonth} from "./index";
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import FormLabel from 'react-bootstrap/FormLabel';
+import FormSelect from 'react-bootstrap/FormSelect';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 
 const MonthSelect = () => {
     const dispatch = useAppDispatch();
     const month = useSelector(selectMonth);
-    const labelId = useId();
     const selectId = useId();
 
 
-    const changeHandler = (ev: SelectChangeEvent) => {
+    const changeHandler = (ev: ChangeEvent<HTMLSelectElement>) => {
         dispatch(setMonth(ev.target.value));
     }
 
     return (
-        <FormControl variant="standard" sx={{minWidth: 120}}>
-            <InputLabel id={labelId}>Month</InputLabel>
-            <Select id={selectId} labelId={labelId} value={month} onChange={changeHandler}>
-                <MenuItem value="01">January</MenuItem>
-                <MenuItem value="02">February</MenuItem>
-                <MenuItem value="03">March</MenuItem>
-                <MenuItem value="04">April</MenuItem>
-                <MenuItem value="05">May</MenuItem>
-                <MenuItem value="06">June</MenuItem>
-                <MenuItem value="07">July</MenuItem>
-                <MenuItem value="08">August</MenuItem>
-                <MenuItem value="09">September</MenuItem>
-                <MenuItem value="10">October</MenuItem>
-                <MenuItem value="11">November</MenuItem>
-                <MenuItem value="12">December</MenuItem>
-            </Select>
-        </FormControl>
+        <InputGroup style={{minWidth: 'fit-content'}} size="sm">
+            <InputGroup.Text>
+                <FormLabel htmlFor={selectId} column="sm">Month</FormLabel>
+            </InputGroup.Text>
+            <FormSelect id={selectId} value={month} onChange={changeHandler}>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </FormSelect>
+        </InputGroup>
     )
 }
 

@@ -30,6 +30,11 @@ export const loadUserValidation = createAsyncThunk<UserValidationResponse>(
         const res = await fetchUserValidation();
         res.loaded = new Date().toISOString();
         return res;
+    }, {
+        condition: (arg, {getState}) => {
+            const state = getState() as RootState;
+            return !selectProfileLoading(state);
+        }
     }
 )
 

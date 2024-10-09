@@ -1,7 +1,7 @@
 import {createAction, createAsyncThunk} from "@reduxjs/toolkit";
 import {
     CustomerPaceResponse,
-    CustomerSort,
+    CustomerPaceRow,
     PaceArgs,
     SlowCustomerPaceRow,
     SlowPace,
@@ -13,8 +13,9 @@ import {selectSegmentsList} from "../segment-list";
 import {customerKey} from "./utils";
 import Decimal from "decimal.js";
 import {selectFastPaceLoading, selectSlowPaceLoading} from "./selectors";
+import {SortProps} from "chums-types";
 
-export const setSort = createAction<CustomerSort>('customers/sort');
+export const setSort = createAction<SortProps<CustomerPaceRow>>('customers/sort');
 
 export const loadCustomers = createAsyncThunk<CustomerPaceResponse, PaceArgs>(
     'customers/load',

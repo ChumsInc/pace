@@ -6,14 +6,14 @@
  * @copyright Copyright &copy; 2011, steve
  */
 
+use chums\ui\WebUI2;
+use chums\user\Groups;
 require_once ("autoload.inc.php");
-require_once ("access.inc.php");
 
-$bodyPath = "apps/pace";
-$title = "Pace Report";
-
-$ui = new WebUI($bodyPath, $title, '', true, 5);
-
-$ui->AddCSS("public/pace.css");
-$ui->addManifest('public/js/manifest.json');
-$ui->Send();
+$ui = new WebUI2([
+    'contentFile' => 'body.inc.php',
+    'title' => 'Pace Report',
+    'requiredRoles' => [Groups::PACE],
+]);
+$ui->addManifestJSON('public/js/manifest.json')
+    ->render();

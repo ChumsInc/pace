@@ -1,40 +1,41 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useAppDispatch} from "../../app/configureStore";
 import {useSelector} from "react-redux";
 import {loadUserValidation, selectProfileError, selectProfileLoading, selectProfileValid} from "./index";
-import Alert from "@mui/material/Alert";
-import LinearProgress from "@mui/material/LinearProgress";
-import AlertTitle from "@mui/material/AlertTitle";
+import Alert from "react-bootstrap/Alert";
+import ProgressBar from "react-bootstrap/ProgressBar";
 
 const ProfileStatus = () => {
     const dispatch = useAppDispatch();
     const valid = useSelector(selectProfileValid);
     const loading = useSelector(selectProfileLoading);
     const error = useSelector(selectProfileError);
-    const [timer, setTimer] = useState(0);
-
+    const intervalHandle = useRef<number>(0)
 
 
     useEffect(() => {
         dispatch(loadUserValidation());
-        const intervalHandle = window.setInterval(() => {
-            dispatch(loadUserValidation())
-        }, 30 * 60 * 1000);
-        setTimer(() => intervalHandle);
+    }, []);
 
-        return () => {
-            window.clearTimeout(timer);
+    useEffect(() => {
+        if (valid) {
+            intervalHandle.current = window.setInterval(() => {
+                dispatch(loadUserValidation())
+            }, 30 * 60 * 1000);
         }
-    }, [])
+        return () => {
+            window.clearTimeout(intervalHandle.current);
+        }
+    }, [valid, loading]);
 
     return (
         <div className="mt-1">
-            {!valid && !loading && <Alert severity="warning">Login is required</Alert>}
-            {loading && <LinearProgress variant="indeterminate" />}
-            {!!error && <Alert severity="error">
-                <AlertTitle>User Validation Error</AlertTitle>
+            {!valid && !loading && <Alert color="warning">Login is required</Alert>}
+            {loading && <ProgressBar striped animated now={100} style={{height: '5px'}} variant="info"/>}
+            {!!error && <Alert color="error">
+                <Alert.Heading>User Validation Error</Alert.Heading>
                 {error}
-            </Alert> }
+            </Alert>}
         </div>
     )
 }

@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useSelector} from "react-redux";
 import {useParams} from "react-router-dom";
 import {selectDates} from "../ducks/app";
-import Button from "@mui/material/Button";
+import Button from "react-bootstrap/Button";
 import {loadCustomers, slowLoadCustomers} from "../ducks/customer/actions";
 import {useAppDispatch} from "../app/configureStore";
 import {loadByDivision, slowLoadByDivision} from "../ducks/division/actions";
@@ -22,8 +22,25 @@ const ReloadButton = () => {
     const customersLoading = useSelector(selectCustomerPaceLoading);
     const segmentsLoading = useSelector(selectSegmentsPaceLoading);
 
-    const [currentYear] = useState(new Date().getFullYear().toString());
-    const [currentMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
+    const [loading, setLoading] = useState<boolean>(divisionsLoading || customersLoading || segmentsLoading);
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear().toString());
+    const [currentMonth, setCurrentMonth] = useState((new Date().getMonth() + 1).toString().padStart(2, '0'));
+    const intervalRef = useRef<number>(0);
+
+
+    useEffect(() => {
+        console.debug({valid, dates, currentYear, currentMonth, loading});
+        if (valid && dates.year === currentYear && dates.month === currentMonth) {
+            intervalRef.current = window.setInterval(reloadHandler, 15 * 60 * 1000);
+        }
+        return () => {
+            window.clearInterval(intervalRef.current);
+        }
+    }, [dates, currentYear, currentMonth, valid, loading]);
+
+    useEffect(() => {
+        setLoading(divisionsLoading || customersLoading || segmentsLoading);
+    }, [divisionsLoading, customersLoading, segmentsLoading]);
 
     const reloadHandler = () => {
         if (!valid) {
@@ -49,13 +66,9 @@ const ReloadButton = () => {
         }
     }
 
-    // useEffect(() => {
-    //     reloadHandler();
-    // }, [dates.year, dates.month]);
-
     return (
-        <Button type="button" disabled={!valid || divisionsLoading || segmentsLoading || customersLoading}
-                variant="contained"
+        <Button type="button" disabled={!valid || loading}
+                variant="primary"
                 onClick={reloadHandler}>
             Reload
         </Button>

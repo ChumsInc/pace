@@ -1,14 +1,19 @@
-import React from 'react';
+import React, {CSSProperties, HTMLAttributes} from 'react';
 import {PaceRow} from "../types";
 import Decimal from "decimal.js";
 import NumericTD from "./NumericTD";
 import numeral from "numeral";
-import TableCell from '@mui/material/TableCell';
-import TableRow, {TableRowProps} from '@mui/material/TableRow';
-import IconButton from "@mui/material/IconButton";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import Button from 'react-bootstrap/Button'
+import styled from "styled-components";
 
+const ProgressTableRow = styled.tr({
+    '--bs-table-bg': 'transparent',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'left bottom',
+    backgroundImage: `linear-gradient(90deg, transparent, var(--bs-border-color))`,
+    backgroundSize: '0',
+    transition: 'background-size ease-in-out',
+})
 
 export interface PaceRowProps {
     link: React.ReactNode;
@@ -18,7 +23,8 @@ export interface PaceRowProps {
     showPercent?: boolean;
     toggled?: boolean;
     onToggle?: () => void;
-    trProps?: TableRowProps
+    trProps?: HTMLAttributes<HTMLTableRowElement>,
+    progress?: number;
 }
 
 const PaceTR = ({
@@ -29,40 +35,48 @@ const PaceTR = ({
                     showPercent,
                     toggled,
                     onToggle,
-                    trProps
+                    trProps,
+                    progress
                 }: PaceRowProps) => {
+    const {style, ...otherProps} = trProps ?? {};
+    const progressStyle: CSSProperties = {
+        backgroundSize: `${Math.min(Math.max(progress ?? 0,0), 1) * 100}% 5px`,
+        ...style,
+    }
+
     return (
-        <TableRow {...trProps}>
-            <TableCell>
+        <ProgressTableRow style={progressStyle} {...otherProps}>
+            <td>
                 {!!onToggle && (
-                    <IconButton aria-label="expand row" size="small" onClick={onToggle}>
-                        {toggled ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
-                    </IconButton>
+                    <Button aria-label="expand row" type="button" size="sm" onClick={onToggle}
+                            variant="link">
+                        {toggled ? <span className="bi-chevron-bar-up"/> : <span className="bi-chevron-down"/>}
+                    </Button>
                 )}
-            </TableCell>
-            <TableCell>{link}</TableCell>
-            <TableCell>{description}</TableCell>
+            </td>
+            <td>{link}</td>
+            <td>{description}</td>
             <NumericTD value={pace.InvoiceTotal}/>
             <NumericTD value={pace.OpenOrderTotal}/>
             <NumericTD value={pace.PrevOpenOrderTotal}/>
             <NumericTD value={pace.HeldOrderTotal}/>
             <NumericTD value={pace.Pace}/>
             {goal !== undefined && Number(goal) !== 0 && (<NumericTD value={goal}/>)}
-            {goal !== undefined && Number(goal) === 0 && (<TableCell/>)}
+            {goal !== undefined && Number(goal) === 0 && (<td/>)}
             {showPercent && (
-                <TableCell align="right">
+                <td align="right">
                     {goal !== undefined && Number(goal) !== 0 && (
                         <span>
                             {numeral(new Decimal(pace.Pace).div(goal).toString()).format('0,0.0%')}
                         </span>
                     )}
-                </TableCell>
+                </td>
             )}
             {showPercent && !goal && (
-                <TableCell align="right"/>
+                <td align="right"/>
             )}
-            {!showPercent && goal !== undefined && Number(goal) === 0 && (<TableCell align="right"/>)}
-        </TableRow>
+            {!showPercent && goal !== undefined && Number(goal) === 0 && (<td align="right"/>)}
+        </ProgressTableRow>
     )
 }
 

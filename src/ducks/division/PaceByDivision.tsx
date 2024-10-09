@@ -14,14 +14,8 @@ import {useAppDispatch} from "../../app/configureStore";
 import {loadByDivision, slowLoadByDivision, toggleExpanded} from "./actions";
 import SegmentRows from "../segment/SegmentRows";
 import {Link} from "react-router-dom";
-import Table from "@mui/material/Table";
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableFooter from "@mui/material/TableFooter";
-import Alert from '@mui/material/Alert';
+import Table from "react-bootstrap/Table";
+import Alert from 'react-bootstrap/Alert';
 import {selectDates} from "../app";
 import {loadBySegment, slowLoadBySegment} from "../segment/actions";
 import {selectProfileValid} from "../profile";
@@ -71,94 +65,99 @@ const PaceByDivision = () => {
 
     return (
         <div className="mt-5">
-            {!!fastError && <Alert severity="error">{fastError}</Alert>}
-            {!!slowError && <Alert severity="error">Slow Pace: {slowError}</Alert>}
-            <TableContainer>
-                <Table size="small">
-                    <TableHead>
-                        <TableRow sx={{'& th': {fontWeight: 700, fontSize: '1rem'}}}>
-                            <TableCell></TableCell>
-                            <TableCell colSpan={2}>Division</TableCell>
-                            <TableCell align="right">Invoiced</TableCell>
-                            <TableCell align="right">Open Orders</TableCell>
-                            <TableCell align="right">Prev Open</TableCell>
-                            <TableCell align="right">On Hold</TableCell>
-                            <TableCell align="right">Pace</TableCell>
-                            <TableCell align="right">Goal</TableCell>
-                            <TableCell align="right">%</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {pace
-                            .filter(row => row.ARDivisionNo !== '10')
-                            .filter(row => !(row.ARDivisionNo === '00' && new Decimal(row.Pace).equals(0)))
-                            .map(row => (
-                                <Fragment key={row.ARDivisionNo}>
-                                    <PaceTR
-                                        link={<DivisionLink
-                                            arDivisionNo={row.ARDivisionNo}>{row.ARDivisionNo}</DivisionLink>}
-                                        description={<DivisionLink
-                                            arDivisionNo={row.ARDivisionNo}>{row.ARDivisionDesc}</DivisionLink>}
-                                        pace={row}
-                                        goal={row.goal ?? 0}
-                                        toggled={expanded[row.ARDivisionNo]}
-                                        onToggle={() => toggleHandler(row.ARDivisionNo)}
-                                        showPercent
-                                        trProps={{sx: {'& > td': {borderBottomWidth: expanded[row.ARDivisionNo] ? 0 : undefined}}}}/>
-                                    {expanded[row.ARDivisionNo] && (<SegmentRows arDivisionNo={row.ARDivisionNo}/>)}
-                                </Fragment>
-                            ))
-                        }
+            {!!fastError && <Alert color="error">{fastError}</Alert>}
+            {!!slowError && <Alert color="error">Slow Pace: {slowError}</Alert>}
+            <div>
+                <Table responsive="sm">
+                    <thead>
+                    <tr style={{fontWeight: 700, fontSize: '1rem'}}>
+                        <th></th>
+                        <th colSpan={2}>Division</th>
+                        <th className="text-end">Invoiced</th>
+                        <th className="text-end">Open Orders</th>
+                        <th className="text-end">Prev Open</th>
+                        <th className="text-end">On Hold</th>
+                        <th className="text-end">Pace</th>
+                        <th className="text-end">Goal</th>
+                        <th className="text-end">%</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {pace
+                        .filter(row => row.ARDivisionNo !== '10')
+                        .filter(row => !(row.ARDivisionNo === '00' && new Decimal(row.Pace).equals(0)))
+                        .map(row => (
+                            <Fragment key={row.ARDivisionNo}>
+                                <PaceTR
+                                    link={<DivisionLink
+                                        arDivisionNo={row.ARDivisionNo}>{row.ARDivisionNo}</DivisionLink>}
+                                    description={<DivisionLink
+                                        arDivisionNo={row.ARDivisionNo}>{row.ARDivisionDesc}</DivisionLink>}
+                                    pace={row}
+                                    goal={row.goal ?? 0}
+                                    toggled={expanded[row.ARDivisionNo]}
+                                    onToggle={() => toggleHandler(row.ARDivisionNo)}
+                                    showPercent
+                                    progress={row.goal ? new Decimal(row.Pace).div(row.goal).toNumber() : undefined}
+                                    trProps={{style: {borderBottomWidth: expanded[row.ARDivisionNo] ? 0 : undefined}}}/>
+                                {expanded[row.ARDivisionNo] && (<SegmentRows arDivisionNo={row.ARDivisionNo}/>)}
+                            </Fragment>
+                        ))
+                    }
 
-                    </TableBody>
-                    <TableFooter>
-                        <PaceTR link={'Total'} description={'Chums Total'} pace={total}
-                                goal={total.goal} showPercent
-                                trProps={{sx: {'& > td': {fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap'}}}}/>
+                    </tbody>
+                    <tfoot>
+                    <PaceTR link={'Total'} description={'Chums Total'} pace={total}
+                            goal={total.goal} showPercent
+                            progress={total.goal ? new Decimal(total.Pace).div(total.goal).toNumber() : undefined}
+                            trProps={{
+                                style: {fontWeight: 700, fontSize: '112.5%', whiteSpace: 'nowrap'},
+                                className: 'my-3'
+                            }}/>
 
-                    </TableFooter>
+                    </tfoot>
                 </Table>
-            </TableContainer>
+            </div>
 
-            <TableContainer className="mt-5">
+            <div className="mt-5">
                 <h2>Non-Revenue Sales</h2>
-                <Table>
-                    <TableHead>
-                        <TableRow sx={{'& th': {fontWeight: 700, fontSize: '1rem'}}}>
-                            <TableCell></TableCell>
-                            <TableCell colSpan={2}>Division</TableCell>
-                            <TableCell align="right">Invoiced</TableCell>
-                            <TableCell align="right">Open Orders</TableCell>
-                            <TableCell align="right">Prev Open</TableCell>
-                            <TableCell align="right">On Hold</TableCell>
-                            <TableCell align="right">Pace</TableCell>
-                            <TableCell align="right">Goal</TableCell>
-                            <TableCell align="right">%</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {fastPace
-                            .filter(row => row.ARDivisionNo === '10')
-                            .map(row => (
-                                <Fragment key={row.ARDivisionNo}>
-                                    <PaceTR
-                                        link={<DivisionLink
-                                            arDivisionNo={row.ARDivisionNo}>{row.ARDivisionNo}</DivisionLink>}
-                                        description={<DivisionLink
-                                            arDivisionNo={row.ARDivisionNo}>{row.ARDivisionDesc}</DivisionLink>}
-                                        pace={row}
-                                        goal={row.goal}
-                                        toggled={expanded[row.ARDivisionNo]}
-                                        onToggle={() => toggleHandler(row.ARDivisionNo)}
-                                        showPercent
-                                        trProps={{sx: {'& > td': {py: '0.5rem'}}}}/>
-                                    {expanded[row.ARDivisionNo] && (<SegmentRows arDivisionNo={row.ARDivisionNo}/>)}
-                                </Fragment>
-                            ))
-                        }
-                    </TableBody>
+                <Table responsive="sm">
+                    <thead>
+                    <tr style={{fontWeight: 700, fontSize: '1rem'}}>
+                        <th></th>
+                        <th colSpan={2}>Division</th>
+                        <th className="text-end">Invoiced</th>
+                        <th className="text-end">Open Orders</th>
+                        <th className="text-end">Prev Open</th>
+                        <th className="text-end">On Hold</th>
+                        <th className="text-end">Pace</th>
+                        <th className="text-end">Goal</th>
+                        <th className="text-end">%</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {fastPace
+                        .filter(row => row.ARDivisionNo === '10')
+                        .map(row => (
+                            <Fragment key={row.ARDivisionNo}>
+                                <PaceTR
+                                    link={<DivisionLink
+                                        arDivisionNo={row.ARDivisionNo}>{row.ARDivisionNo}</DivisionLink>}
+                                    description={<DivisionLink
+                                        arDivisionNo={row.ARDivisionNo}>{row.ARDivisionDesc}</DivisionLink>}
+                                    pace={row}
+                                    goal={row.goal}
+                                    toggled={expanded[row.ARDivisionNo]}
+                                    onToggle={() => toggleHandler(row.ARDivisionNo)}
+                                    showPercent
+                                    trProps={{className: 'my-3'}}/>
+                                {expanded[row.ARDivisionNo] && (<SegmentRows arDivisionNo={row.ARDivisionNo}/>)}
+                            </Fragment>
+                        ))
+                    }
+                    </tbody>
                 </Table>
-            </TableContainer>
+            </div>
         </div>
 
     )

@@ -77,10 +77,9 @@ const SegmentRows = ({arDivisionNo}: SegmentRowsProps) => {
                             pace={row}
                             goal=""
                             trProps={{
-                                className: `pace--${filtered.length}-${index}`,
-                                sx: {
-                                '& > *': {py: '0.25rem', borderBottomWidth: (filtered.length - 1) === index ? undefined : 0}
-                            }}}
+                                className: `pace--${filtered.length}-${index} py-1`,
+                                style: {borderBottomWidth: (filtered.length - 1) === index ? undefined : 0}
+                            }}
                     />
                 ))}
         </>

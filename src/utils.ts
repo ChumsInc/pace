@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
-import {CustomerKey, CustomerPaceRow, CustomerSort, PaceRow, SlowPace} from "./types";
+import {CustomerPaceRow, PaceRow, SlowPace} from "./types";
 import {customerKey} from "./ducks/customer/utils";
+import {SortProps} from "chums-types";
 
 export const paceReducer = (pv: PaceRow, cv: PaceRow) => {
     return {
@@ -23,34 +24,34 @@ export const paceRow = <T extends PaceRow>(slowPace: SlowPace, keyFn: (row: T) =
 }
 
 
-export const customerPaceSorter = (sort: CustomerSort) => (a: CustomerPaceRow, b: CustomerPaceRow): number => {
+export const customerPaceSorter = (sort: SortProps<CustomerPaceRow>) => (a: CustomerPaceRow, b: CustomerPaceRow): number => {
     const {field, ascending} = sort;
     const sortMod = ascending ? 1 : -1;
     switch (field) {
-    case 'CustomerNo':
-    case 'CustomerName':
-        return (
-            a[field].toLowerCase() === b[field].toLowerCase()
-                ? (customerKey(a) > customerKey(b) ? 1 : -1)
-                : (a[field].toLowerCase() > b[field].toLowerCase() ? 1 : -1)
+        case 'CustomerNo':
+        case 'CustomerName':
+            return (
+                a[field].toLowerCase() === b[field].toLowerCase()
+                    ? (customerKey(a) > customerKey(b) ? 1 : -1)
+                    : (a[field].toLowerCase() > b[field].toLowerCase() ? 1 : -1)
 
-        ) * sortMod;
-    case 'InvoiceTotal':
-    case 'OpenOrderTotal':
-    case 'PrevOpenOrderTotal':
-    case 'HeldOrderTotal':
-    case 'Pace':
-        return (
-            new Decimal(a[field]).eq(b[field])
-                ? (
-                    new Decimal(a.Pace).eq(b.Pace)
-                        ? (customerKey(a) > customerKey(b) ? 1 : -1)
-                        : (new Decimal(a.Pace).gt(b.Pace) ? 1 : -1)
-                )
-                : (new Decimal(a[field]).gt(b[field]) ? 1 : -1)
-        ) * -sortMod;
-    default:
-        return customerKey(a) > customerKey(b) ? 1 : -1;
+            ) * sortMod;
+        case 'InvoiceTotal':
+        case 'OpenOrderTotal':
+        case 'PrevOpenOrderTotal':
+        case 'HeldOrderTotal':
+        case 'Pace':
+            return (
+                new Decimal(a[field]).eq(b[field])
+                    ? (
+                        new Decimal(a.Pace).eq(b.Pace)
+                            ? (customerKey(a) > customerKey(b) ? 1 : -1)
+                            : (new Decimal(a.Pace).gt(b.Pace) ? 1 : -1)
+                    )
+                    : (new Decimal(a[field]).gt(b[field]) ? 1 : -1)
+            ) * -sortMod;
+        default:
+            return customerKey(a) > customerKey(b) ? 1 : -1;
     }
 }
 

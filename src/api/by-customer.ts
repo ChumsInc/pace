@@ -1,5 +1,5 @@
 import {CustomerPaceResponse, SlowCustomerPaceRow, SlowPaceResponse} from "../types";
-import {fetchJSON} from "chums-components";
+import {fetchJSON} from "./fetch";
 
 
 const paceByCustomerURL = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/customer';
@@ -11,7 +11,11 @@ export async function fetchByCustomer(year: string, month: string, ARDivisionNo:
             .replace(':year', encodeURIComponent(year))
             .replace(':month', encodeURIComponent(month))
             .replace(':ARDivisionNo', encodeURIComponent(ARDivisionNo));
-        return await fetchJSON<CustomerPaceResponse>(url);
+        const response = await fetchJSON<CustomerPaceResponse>(url);
+        if (!response || response.error) {
+            return Promise.reject(new Error(response?.error ?? 'Unable to load customer pace'));
+        }
+        return response;
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchByCustomer()", err.message);
@@ -31,7 +35,12 @@ export async function fetchSlowByCustomer(year: string, month: string, ARDivisio
         query.set('ARDivisionNo', ARDivisionNo);
 
         const url = `${slowPaceByCustomerURL}?${query.toString()}`;
-        return await fetchJSON<SlowPaceResponse<SlowCustomerPaceRow>>(url);
+        const response = await fetchJSON<SlowPaceResponse<SlowCustomerPaceRow>>(url);
+        if (!response || response.error) {
+            return Promise.reject(new Error(response?.error ?? 'Unable to load customer pace (slow)'));
+        }
+        return response;
+
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchSlowByCustomer()", err.message);

@@ -1,37 +1,35 @@
 import React, {useEffect, useState} from 'react';
-import {useAppDispatch, useAppSelector} from "../../app/configureStore";
+import {useAppDispatch} from "../../app/configureStore";
 import {useSelector} from "react-redux";
-import {selectFastError, selectCustomersLoaded, selectPace, selectSlowError, selectSlowPace, selectSort} from "./selectors";
+import {
+    selectCustomersLoaded,
+    selectFastError,
+    selectPace,
+    selectSlowError,
+    selectSlowPace,
+    selectSort
+} from "./selectors";
 import {customerPaceSorter, paceReducer, paceRow, zeroTotal} from "../../utils";
 import {useParams} from "react-router-dom";
 import {customerKey} from "./utils";
 import {CustomerPaceRow} from "../../types";
-import {SortableTableField} from "chums-components/dist/types";
+import type {SortableTableField} from "chums-components";
 import {loadCustomers, setSort, slowLoadCustomers} from "./actions";
 import numeral from "numeral";
 import {numeralFormat} from "../../app/constants";
 import {selectDates} from "../app";
 import classNames from "classnames";
 import Decimal from "decimal.js";
-import Table from "@mui/material/Table";
-import TableBody from '@mui/material/TableBody';
-import TableCell, {TableCellProps} from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableFooter from "@mui/material/TableFooter";
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Alert from "@mui/material/Alert";
+import Table from "react-bootstrap/Table";
+import Alert from "react-bootstrap/Alert";
 import CustomerLink from "./CustomerLink";
 import {selectProfileValid} from "../profile";
 import {selectDivisionsLoaded} from "../division/selectors";
 import {loadByDivision} from "../division/actions";
+import TableSortLabel from "../../components/TableSortLabel";
 
-interface CustomerTableField extends SortableTableField<CustomerPaceRow> {
-    cellProps?: TableCellProps,
-}
 
-const fields: CustomerTableField[] = [
+const fields: SortableTableField<CustomerPaceRow>[] = [
     {
         field: 'CustomerNo',
         title: 'Customer',
@@ -48,7 +46,7 @@ const fields: CustomerTableField[] = [
         field: 'InvoiceTotal',
         title: 'Invoiced',
         sortable: true,
-        cellProps: {align: 'right'},
+        align: 'end',
         className: (row) => classNames('text-end', {'text-danger': new Decimal(row.InvoiceTotal).lt(0)}),
         render: (row) => numeral(row.InvoiceTotal).format(numeralFormat)
     },
@@ -56,7 +54,7 @@ const fields: CustomerTableField[] = [
         field: 'OpenOrderTotal',
         title: 'Open Orders',
         sortable: true,
-        cellProps: {align: 'right'},
+        align: 'end',
         className: (row) => classNames('text-end', {'text-danger': new Decimal(row.OpenOrderTotal).lt(0)}),
         render: (row) => numeral(row.OpenOrderTotal).format(numeralFormat)
     },
@@ -64,7 +62,7 @@ const fields: CustomerTableField[] = [
         field: 'PrevOpenOrderTotal',
         title: 'Prev Open',
         sortable: true,
-        cellProps: {align: 'right'},
+        align: 'end',
         className: (row) => classNames('text-end', {'text-danger': new Decimal(row.PrevOpenOrderTotal).lt(0)}),
         render: (row) => numeral(row.PrevOpenOrderTotal).format(numeralFormat)
     },
@@ -72,7 +70,7 @@ const fields: CustomerTableField[] = [
         field: 'HeldOrderTotal',
         title: 'On Hold',
         sortable: true,
-        cellProps: {align: 'right'},
+        align: 'end',
         className: (row) => classNames('text-end', {'text-danger': new Decimal(row.HeldOrderTotal).lt(0)}),
         render: (row) => numeral(row.HeldOrderTotal).format(numeralFormat)
     },
@@ -80,7 +78,7 @@ const fields: CustomerTableField[] = [
         field: 'Pace',
         title: 'Pace',
         sortable: true,
-        cellProps: {align: 'right'},
+        align: 'end',
         className: (row) => classNames('text-end', {'text-danger': new Decimal(row.Pace).lt(0)}),
         render: (row) => numeral(row.Pace).format(numeralFormat)
     },
@@ -140,53 +138,55 @@ const PaceByCustomer = () => {
 
     return (
         <div className="mt-5">
-            {!!fastError && <Alert severity="error">{fastError}</Alert>}
-            {!!slowError && <Alert severity="error">Slow Pace: {slowError}</Alert>}
-            <TableContainer>
+            {!!fastError && <Alert color="error">{fastError}</Alert>}
+            {!!slowError && <Alert color="error">Slow Pace: {slowError}</Alert>}
+            <div>
                 <Table size="small">
-                    <TableHead>
-                        <TableRow sx={{'& > th': {fontWeight: 700, fontSize: '1rem', color: 'var(--bs-body-color)'}}}>
-                            {fields.map((row, index) => (
-                                <TableCell key={index} {...row.cellProps}>
-                                    <TableSortLabel
-                                        active={sort.field === row.field}
-                                        direction={sort.field === row.field ? (sort.ascending ? 'asc' : 'desc') : 'asc'}
-                                        onClick={() => sortChangeHandler(row.field)}>
-                                        {row.title}
-                                    </TableSortLabel>
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sorted.map(row => (
-                            <TableRow key={customerKey(row)}>
-                                {fields.map((field, index) => (
-                                    <TableCell key={index} {...field.cellProps}>
-                                        {!!field.render && (
-                                            <>{field.render(row)}</>
-                                        )}
-                                        {!field.render && (
-                                            <>{row[field.field]}</>
-                                        )}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
+                    <thead>
+                    <tr style={{fontWeight: 700, fontSize: '1rem', color: 'var(--bs-body-color)'}}>
+                        {fields.map((field, index) => (
+                            <th key={index} className={classNames({[`text-${field.align}`]: !!field.align})}>
+                                <TableSortLabel
+                                    active={sort.field === field.field}
+                                    iconBefore={field.align !== 'end'}
+                                    align={field.align}
+                                    direction={sort.field === field.field ? (sort.ascending ? 'asc' : 'desc') : 'asc'}
+                                    onClick={() => sortChangeHandler(field.field)}>
+                                    {field.title}
+                                </TableSortLabel>
+                            </th>
                         ))}
-                    </TableBody>
-                    <TableFooter>
-                        <TableRow sx={{'& > td': {fontWeight: 700, fontSize: '1rem', color: 'var(--bs-body-color)'}}}>
-                            <TableCell colSpan={2}>Total</TableCell>
-                            <TableCell align="right">{numeral(total.InvoiceTotal).format(numeralFormat)}</TableCell>
-                            <TableCell align="right">{numeral(total.OpenOrderTotal).format(numeralFormat)}</TableCell>
-                            <TableCell
-                                align="right">{numeral(total.PrevOpenOrderTotal).format(numeralFormat)}</TableCell>
-                            <TableCell align="right">{numeral(total.HeldOrderTotal).format(numeralFormat)}</TableCell>
-                            <TableCell align="right">{numeral(total.Pace).format(numeralFormat)}</TableCell>
-                        </TableRow>
-                    </TableFooter>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {sorted.map(row => (
+                        <tr key={customerKey(row)}>
+                            {fields.map((field, index) => (
+                                <td key={index} className={classNames({[`text-${field.align}`]: !!field.align})}>
+                                    {!!field.render && (
+                                        <>{field.render(row)}</>
+                                    )}
+                                    {!field.render && (
+                                        <>{row[field.field]}</>
+                                    )}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                    </tbody>
+                    <tfoot>
+                    <tr style={{fontWeight: 700, fontSize: '1rem', color: 'var(--bs-body-color)'}}>
+                        <th colSpan={2}>Total</th>
+                        <td className="text-end">{numeral(total.InvoiceTotal).format(numeralFormat)}</td>
+                        <td className="text-end">{numeral(total.OpenOrderTotal).format(numeralFormat)}</td>
+                        <td
+                            className="text-end">{numeral(total.PrevOpenOrderTotal).format(numeralFormat)}</td>
+                        <td className="text-end">{numeral(total.HeldOrderTotal).format(numeralFormat)}</td>
+                        <td className="text-end">{numeral(total.Pace).format(numeralFormat)}</td>
+                    </tr>
+                    </tfoot>
                 </Table>
-            </TableContainer>
+            </div>
         </div>
     )
 }

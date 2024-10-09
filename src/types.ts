@@ -1,4 +1,3 @@
-import {SortProps} from "chums-components";
 import {UserProfile} from "chums-types";
 
 export interface Month {
@@ -127,10 +126,6 @@ export interface CustomerPaceResponse {
 export interface SlowCustomerPaceRow extends CustomerKey, SlowPaceRow {
     CustomerName: string;
     Segment: string | null;
-}
-
-export interface CustomerSort extends SortProps {
-    field: keyof CustomerPaceRow
 }
 
 export interface UserValidationResponse {

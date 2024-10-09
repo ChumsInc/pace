@@ -1,12 +1,13 @@
-import {CustomerPaceRow, CustomerSort, PaceState, SlowCustomerPaceRow, SlowPace} from "../../types";
+import {CustomerPaceRow, PaceState, SlowCustomerPaceRow, SlowPace} from "../../types";
 import {createReducer} from "@reduxjs/toolkit";
 import {loadCustomers, setSort, slowLoadCustomers} from "./actions";
 import {customerKey} from "./utils";
+import {SortProps} from "chums-types";
 
 export interface CustomerState extends PaceState {
     pace: CustomerPaceRow[];
     slowPace: SlowPace<SlowCustomerPaceRow>;
-    sort: CustomerSort
+    sort: SortProps<CustomerPaceRow>
 }
 
 const initialState: CustomerState = {

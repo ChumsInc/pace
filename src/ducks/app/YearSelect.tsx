@@ -1,12 +1,10 @@
-import React, {useId, useState} from 'react';
+import React, {ChangeEvent, useId, useState} from 'react';
 import {useAppDispatch} from "../../app/configureStore";
 import {useSelector} from "react-redux";
 import {selectYear, setYear} from "./index";
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
-
+import FormLabel from 'react-bootstrap/FormLabel';
+import FormSelect from 'react-bootstrap/FormSelect';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 const years = [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1];
 
@@ -18,22 +16,25 @@ const YearSelect = () => {
     const selectId = useId();
 
 
-    const yearChangeHandler = (ev: SelectChangeEvent) => {
+    const yearChangeHandler = (ev: ChangeEvent<HTMLSelectElement>) => {
         dispatch(setYear(ev.target.value));
     }
 
     return (
-        <FormControl variant="standard" sx={{minWidth: 120}}>
-            <InputLabel id={labelId}>Year</InputLabel>
-            <Select id={selectId} labelId={labelId} value={year} onChange={yearChangeHandler}>
+        <InputGroup size="sm">
+            <InputGroup.Text>
+                <FormLabel htmlFor={selectId} column="sm">
+                    Year
+                </FormLabel>
+            </InputGroup.Text>
+            <FormSelect id={selectId} value={year} onChange={yearChangeHandler}>
                 {years.map(y => currentYear + y)
                     .sort()
                     .reverse()
                     .map(year => (
-                    <MenuItem key={year} value={year.toString()}>{year.toString()}</MenuItem>))}
-            </Select>
-
-        </FormControl>
+                        <option key={year} value={year.toString()}>{year.toString()}</option>))}
+            </FormSelect>
+        </InputGroup>
     )
 }
 

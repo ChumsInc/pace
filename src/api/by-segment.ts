@@ -1,5 +1,5 @@
 import {Segment, SegmentList, SegmentPaceResponse, SlowPaceResponse, SlowSegmentPaceRow} from "../types";
-import {fetchJSON} from "chums-components";
+import {fetchJSON} from "./fetch";
 
 
 const paceBySegmentURL = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/segment';
@@ -9,8 +9,7 @@ export async function fetchSegments(): Promise<SegmentList> {
     try {
         const segments = await fetchJSON<Segment[]>('/api/sales/customer-types');
         const list: SegmentList = {};
-        segments
-            .forEach(row => {
+        segments?.forEach(row => {
                 if (row.CustomerType) {
                     list[row.CustomerType] = row;
                 }
@@ -32,7 +31,12 @@ export async function fetchBySegment(year: string, month: string, ARDivisionNo: 
             .replace(':year', encodeURIComponent(year))
             .replace(':month', encodeURIComponent(month))
             .replace(':ARDivisionNo', encodeURIComponent(ARDivisionNo));
-        return await fetchJSON<SegmentPaceResponse>(url);
+        const response = await fetchJSON<SegmentPaceResponse>(url);
+        if (!response || response.error) {
+            return Promise.reject(new Error(response?.error ?? 'Unable to load segment pace'));
+        }
+        return response;
+
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchByDivision()", err.message);
@@ -51,7 +55,12 @@ export async function fetchSlowBySegment(year: string, month: string): Promise<S
         query.set('month', Number(month).toString());
 
         const url = `${slowPaceBySegmentURL}?${query.toString()}`;
-        return await fetchJSON<SlowPaceResponse<SlowSegmentPaceRow>>(url);
+        const response = await fetchJSON<SlowPaceResponse<SlowSegmentPaceRow>>(url);
+        if (!response || response.error) {
+            return Promise.reject(new Error(response?.error ?? 'Unable to load customer pace'));
+        }
+        return response;
+
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.debug("fetchSlowByDivision()", err.message);

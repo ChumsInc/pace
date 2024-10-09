@@ -1,12 +1,11 @@
 import React from 'react';
-import {generatePath, Link as RoutedLink, useParams} from "react-router-dom";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "@mui/material/Link";
+import {generatePath, useParams} from "react-router-dom";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
 import {divisionPath} from "../../app/constants";
-import Typography from "@mui/material/Typography";
 import {useSelector} from "react-redux";
 import {selectDivisions} from "../division/selectors";
 import {selectSegmentsList} from "../segment-list";
+import {LinkContainer} from "react-router-bootstrap";
 
 
 const PaceBreadcrumbs = () => {
@@ -19,27 +18,24 @@ const PaceBreadcrumbs = () => {
 
 
     return (
-        <Breadcrumbs sx={{alignItems: 'center'}}>
+        <Breadcrumb>
             {!!currentDivision && (
-                <Link underline="hover" sx={{display: 'flex', alignItems: 'center'}} component={RoutedLink} to="/">
-                    CHUMS Pace
-                </Link>
+                <Breadcrumb.Item as={LinkContainer} to="/">CHUMS Pace</Breadcrumb.Item>
             )}
             {!!currentDivision && !currentSegment && (
-                <Typography
-                    color="text.primary">[{currentDivision.ARDivisionNo}] {currentDivision.ARDivisionDesc} </Typography>
+                <Breadcrumb.Item
+                    active>[{currentDivision.ARDivisionNo}] {currentDivision.ARDivisionDesc} </Breadcrumb.Item>
             )}
             {!!currentDivision && !!currentSegment && (
-                <Link underline="hover" sx={{display: 'flex', alignItems: 'center'}} component={RoutedLink}
-                      to={generatePath(divisionPath, {arDivisionNo: currentDivision.ARDivisionNo})}>
+                <Breadcrumb.Item as={LinkContainer}
+                                 to={generatePath(divisionPath, {arDivisionNo: currentDivision.ARDivisionNo})}>
                     [{currentDivision.ARDivisionNo}] {currentDivision.ARDivisionDesc}
-                </Link>
+                </Breadcrumb.Item>
             )}
             {!!currentSegment && (
-                <Typography
-                    color="text.primary">[{currentSegment.CustomerType}] {currentSegment.Description}</Typography>
+                <Breadcrumb.Item active>[{currentSegment.CustomerType}] {currentSegment.Description}</Breadcrumb.Item>
             )}
-        </Breadcrumbs>
+        </Breadcrumb>
     )
 }
 
