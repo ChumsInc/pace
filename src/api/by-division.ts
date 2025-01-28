@@ -1,5 +1,5 @@
 import {DivisionPaceResponse, SlowPaceResponse} from "../types";
-import {fetchJSON} from "./fetch";
+import {fetchJSON} from "chums-ui-utils";
 
 const paceByDivisionURL = '/api/sales/pace/chums/:year-:month';
 const slowPaceByDivisionURL = '/sage/api/pace/by-division.php';

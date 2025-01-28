@@ -13,7 +13,7 @@ import PaceTR from "../../components/PaceTR";
 import {useAppDispatch} from "../../app/configureStore";
 import {loadByDivision, slowLoadByDivision, toggleExpanded} from "./actions";
 import SegmentRows from "../segment/SegmentRows";
-import {Link} from "react-router-dom";
+import {Link} from "react-router";
 import Table from "react-bootstrap/Table";
 import Alert from 'react-bootstrap/Alert';
 import {selectDates} from "../app";
@@ -61,12 +61,15 @@ const PaceByDivision = () => {
         }
     }, [valid, dates])
 
-    const toggleHandler = (ARDivisionNo: string) => dispatch(toggleExpanded(ARDivisionNo));
+    const toggleHandler = (ARDivisionNo: string) => {
+
+        dispatch(toggleExpanded(ARDivisionNo));
+    }
 
     return (
         <div className="mt-5">
-            {!!fastError && <Alert color="error">{fastError}</Alert>}
-            {!!slowError && <Alert color="error">Slow Pace: {slowError}</Alert>}
+            {!!fastError && <Alert variant="error">{fastError}</Alert>}
+            {!!slowError && <Alert variant="error">Slow Pace: {slowError}</Alert>}
             <div>
                 <Table responsive="sm">
                     <thead>

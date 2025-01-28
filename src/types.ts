@@ -38,11 +38,11 @@ export interface SlowPaceResponse<T = SlowDivisionPaceRow> {
     error?: string;
 }
 
-export interface SlowPace<T = any> {
+export interface SlowPace<T = unknown> {
     [key: string]: T;
 }
 
-export interface SlowPacePayload<T = any> {
+export interface SlowPacePayload<T = unknown> {
     invoiced: SlowPace<T>,
     timestamp: string;
 }

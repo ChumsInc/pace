@@ -1,5 +1,5 @@
 import {Segment, SegmentList, SegmentPaceResponse, SlowPaceResponse, SlowSegmentPaceRow} from "../types";
-import {fetchJSON} from "./fetch";
+import {fetchJSON} from "chums-ui-utils";
 
 
 const paceBySegmentURL = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/segment';

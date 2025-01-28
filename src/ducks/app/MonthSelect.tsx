@@ -18,7 +18,7 @@ const MonthSelect = () => {
     }
 
     return (
-        <InputGroup style={{minWidth: 'fit-content'}} size="sm">
+        <InputGroup style={{minWidth: 'fit-content'}} >
             <InputGroup.Text>
                 <FormLabel htmlFor={selectId} column="sm">Month</FormLabel>
             </InputGroup.Text>

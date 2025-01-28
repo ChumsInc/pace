@@ -10,10 +10,10 @@ import {
     selectSort
 } from "./selectors";
 import {customerPaceSorter, paceReducer, paceRow, zeroTotal} from "../../utils";
-import {useParams} from "react-router-dom";
+import {useParams} from "react-router";
 import {customerKey} from "./utils";
 import {CustomerPaceRow} from "../../types";
-import type {SortableTableField} from "chums-components";
+import type {SortableTableField} from "sortable-tables";
 import {loadCustomers, setSort, slowLoadCustomers} from "./actions";
 import numeral from "numeral";
 import {numeralFormat} from "../../app/constants";
@@ -138,8 +138,8 @@ const PaceByCustomer = () => {
 
     return (
         <div className="mt-5">
-            {!!fastError && <Alert color="error">{fastError}</Alert>}
-            {!!slowError && <Alert color="error">Slow Pace: {slowError}</Alert>}
+            {!!fastError && <Alert variant="error">{fastError}</Alert>}
+            {!!slowError && <Alert variant="error">Slow Pace: {slowError}</Alert>}
             <div>
                 <Table size="small">
                     <thead>

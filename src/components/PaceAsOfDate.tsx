@@ -1,4 +1,5 @@
 import React from 'react';
+import {FormControl} from "react-bootstrap";
 
 const friendlyDate = (d:Date|string|number) => {
     const date = new Date(d);
@@ -8,17 +9,18 @@ const friendlyDate = (d:Date|string|number) => {
     }
     return d.toLocaleString();
 }
-export interface PaceAsOfDateProps {
-    updated: string|null;
-}
 
 const PaceAsOfDate = ({updated}:PaceAsOfDateProps) => {
     if (!updated) {
         return null;
     }
     return (
-        <span className="text-muted"><span className="d-none d-md-inline">Last Updated:</span>  {friendlyDate(new Date(updated))}</span>
+        <FormControl plaintext readOnly defaultValue={`Last Updated: ${friendlyDate(updated)}`}  />
     )
 }
 
 export default PaceAsOfDate;
+
+export interface PaceAsOfDateProps {
+    updated: string|null;
+}

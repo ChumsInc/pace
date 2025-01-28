@@ -1,7 +1,8 @@
 import {DivisionPaceRow, PaceState, SlowDivisionPaceRow, SlowPace} from "../../types";
 import {createReducer} from "@reduxjs/toolkit";
 import {loadByDivision, slowLoadByDivision, toggleExpanded} from "./actions";
-import {getPreference, localStorageKeys, setPreference} from "../../api/preferences";
+import {localStorageKeys} from "../../api/preferences";
+import {LocalStore} from "chums-ui-utils";
 
 
 export interface ByDivisionState extends PaceState {
@@ -23,7 +24,7 @@ export const initialByDivisionState: ByDivisionState = {
     fastError: null,
     slowError: null,
     expanded: {
-        ...getPreference(localStorageKeys.divisionExpanded, {})
+        ...LocalStore.getItem(localStorageKeys.divisionExpanded, {})
     }
 }
 
@@ -69,7 +70,7 @@ const divisionReducer = createReducer(initialByDivisionState, (builder) => {
         })
         .addCase(toggleExpanded, (state, action) => {
             state.expanded[action.payload] = !state.expanded[action.payload];
-            setPreference(localStorageKeys.divisionExpanded, state.expanded);
+            LocalStore.setItem(localStorageKeys.divisionExpanded, state.expanded);
         })
 })
 

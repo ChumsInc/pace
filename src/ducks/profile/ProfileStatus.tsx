@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {useAppDispatch} from "../../app/configureStore";
 import {useSelector} from "react-redux";
 import {loadUserValidation, selectProfileError, selectProfileLoading, selectProfileValid} from "./index";
@@ -30,9 +30,9 @@ const ProfileStatus = () => {
 
     return (
         <div className="mt-1">
-            {!valid && !loading && <Alert color="warning">Login is required</Alert>}
-            {loading && <ProgressBar striped animated now={100} style={{height: '5px'}} variant="info"/>}
-            {!!error && <Alert color="error">
+            {!valid && !loading && <Alert variant="warning">Login is required</Alert>}
+            {loading && <ProgressBar striped animated now={100} style={{height: '0.5rem'}} variant="info"/>}
+            {!!error && <Alert variant="error">
                 <Alert.Heading>User Validation Error</Alert.Heading>
                 {error}
             </Alert>}

@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import {CustomerPaceRow, PaceRow, SlowPace} from "./types";
+import {CustomerPaceRow, PaceRow, SegmentPaceRow, SlowPace, SlowPaceRow} from "./types";
 import {customerKey} from "./ducks/customer/utils";
 import {SortProps} from "chums-types";
 
@@ -14,7 +14,7 @@ export const paceReducer = (pv: PaceRow, cv: PaceRow) => {
     }
 }
 
-export const paceRow = <T extends PaceRow>(slowPace: SlowPace, keyFn: (row: T) => string) => (row: T): T => {
+export const paceRow = <T extends PaceRow>(slowPace: SlowPace<SlowPaceRow>, keyFn: (row: T) => string) => (row: T): T => {
     return {
         ...row,
         InvoiceTotal: slowPace[keyFn(row)]?.InvoiceTotal ?? row.InvoiceTotal,

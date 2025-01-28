@@ -7,7 +7,7 @@ import {selectMonth, selectYear} from "../app";
 import PaceTR from "../../components/PaceTR";
 import {segmentKey} from "./utils";
 import {selectSegmentsList} from "../segment-list";
-import {generatePath, Link} from "react-router-dom";
+import {generatePath, Link} from "react-router";
 import {segmentPath} from "../../app/constants";
 import {selectProfileValid} from "../profile";
 import {paceRow} from "../../utils";

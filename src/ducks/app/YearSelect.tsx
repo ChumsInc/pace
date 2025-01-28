@@ -12,7 +12,6 @@ const YearSelect = () => {
     const dispatch = useAppDispatch();
     const year = useSelector(selectYear);
     const [currentYear] = useState(new Date().getFullYear());
-    const labelId = useId();
     const selectId = useId();
 
 
@@ -21,7 +20,7 @@ const YearSelect = () => {
     }
 
     return (
-        <InputGroup size="sm">
+        <InputGroup>
             <InputGroup.Text>
                 <FormLabel htmlFor={selectId} column="sm">
                     Year

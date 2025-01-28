@@ -3,6 +3,7 @@ import {createReducer} from "@reduxjs/toolkit";
 import {loadCustomers, setSort, slowLoadCustomers} from "./actions";
 import {customerKey} from "./utils";
 import {SortProps} from "chums-types";
+import {customerPaceSorter} from "../../utils";
 
 export interface CustomerState extends PaceState {
     pace: CustomerPaceRow[];
@@ -37,7 +38,7 @@ const customerReducer = createReducer(initialState, (builder) => {
             state.pace = [
                 ...state.pace.filter(row => row.ARDivisionNo !== action.meta.arg.ARDivisionNo),
                 ...(action.payload.pace || [])
-            ];
+            ].sort(customerPaceSorter({field: "CustomerNo", ascending: true}));
             state.loaded = action.payload.timestamp;
         })
         .addCase(loadCustomers.rejected, (state, action) => {
@@ -49,12 +50,23 @@ const customerReducer = createReducer(initialState, (builder) => {
         })
         .addCase(slowLoadCustomers.fulfilled, (state, action) => {
             state.slowLoading = false;
-            // remove
+            // remove any remaining customers from other divisions;
             const remainingSlowPace: SlowPace<SlowCustomerPaceRow> = {};
-            Object.values(state.slowPace).filter(row => row.ARDivisionNo !== action.meta.arg.ARDivisionNo)
+            Object.values(state.slowPace)
+                .filter(row => row.ARDivisionNo !== action.meta.arg.ARDivisionNo)
                 .forEach(row => {
                     remainingSlowPace[customerKey(row)] = row;
                 });
+
+            // add to pace any customers that came in via slow pace.
+            const customers = state.pace.map(row => customerKey(row));
+            Object.values(action.payload.invoiced)
+                .filter(row => !customers.includes(customerKey(row)))
+                .forEach(row => {
+                    state.pace.push({...row, InvoiceTotal: 0, PrevOpenOrderTotal: 0, HeldOrderTotal: 0, OpenOrderTotal: 0, Pace: 0})
+                });
+
+            state.pace = [...state.pace].sort(customerPaceSorter({field: "CustomerNo", ascending: true}))
             state.slowPace = {...remainingSlowPace, ...action.payload.invoiced};
             state.loaded = action.payload.timestamp;
         })

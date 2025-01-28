@@ -1,12 +1,10 @@
 import React from 'react';
-import {generatePath, useParams} from "react-router-dom";
+import {generatePath, Link, useParams} from "react-router";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
 import {divisionPath} from "../../app/constants";
 import {useSelector} from "react-redux";
 import {selectDivisions} from "../division/selectors";
 import {selectSegmentsList} from "../segment-list";
-import {LinkContainer} from "react-router-bootstrap";
-
 
 const PaceBreadcrumbs = () => {
     const {arDivisionNo, segment} = useParams<'arDivisionNo' | 'segment'>()
@@ -19,16 +17,15 @@ const PaceBreadcrumbs = () => {
 
     return (
         <Breadcrumb>
-            {!!currentDivision && (
-                <Breadcrumb.Item as={LinkContainer} to="/">CHUMS Pace</Breadcrumb.Item>
-            )}
+            <Breadcrumb.Item linkAs={Link} linkProps={{to: '/'}}>CHUMS Pace</Breadcrumb.Item>
             {!!currentDivision && !currentSegment && (
-                <Breadcrumb.Item
-                    active>[{currentDivision.ARDivisionNo}] {currentDivision.ARDivisionDesc} </Breadcrumb.Item>
+                <Breadcrumb.Item active>
+                    [{currentDivision.ARDivisionNo}] {currentDivision.ARDivisionDesc}
+                </Breadcrumb.Item>
             )}
             {!!currentDivision && !!currentSegment && (
-                <Breadcrumb.Item as={LinkContainer}
-                                 to={generatePath(divisionPath, {arDivisionNo: currentDivision.ARDivisionNo})}>
+                <Breadcrumb.Item linkAs={Link}
+                                 linkProps={{to: generatePath(divisionPath, {arDivisionNo: currentDivision.ARDivisionNo})}}>
                     [{currentDivision.ARDivisionNo}] {currentDivision.ARDivisionDesc}
                 </Breadcrumb.Item>
             )}

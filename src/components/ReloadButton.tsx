@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useSelector} from "react-redux";
-import {useParams} from "react-router-dom";
+import {useParams} from "react-router";
 import {selectDates} from "../ducks/app";
 import Button from "react-bootstrap/Button";
 import {loadCustomers, slowLoadCustomers} from "../ducks/customer/actions";
@@ -29,14 +29,24 @@ const ReloadButton = () => {
 
 
     useEffect(() => {
-        console.debug({valid, dates, currentYear, currentMonth, loading});
+        if (!loading) {
+            setCurrentYear(new Date().getFullYear().toString());
+            setCurrentMonth((new Date().getMonth() + 1).toString().padStart(2, '0'));
+        }
+    }, [loading]);
+
+    useEffect(() => {
+        const currentYear = new Date().getFullYear().toString();
+        const currentMonth = (new Date().getMonth() + 1).toString().padStart(2, '0');
+        setCurrentYear(currentYear);
+        setCurrentMonth(currentMonth);
         if (valid && dates.year === currentYear && dates.month === currentMonth) {
             intervalRef.current = window.setInterval(reloadHandler, 15 * 60 * 1000);
         }
         return () => {
             window.clearInterval(intervalRef.current);
         }
-    }, [dates, currentYear, currentMonth, valid, loading]);
+    }, [dates, valid, loading]);
 
     useEffect(() => {
         setLoading(divisionsLoading || customersLoading || segmentsLoading);

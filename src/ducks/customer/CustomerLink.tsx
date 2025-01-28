@@ -14,7 +14,7 @@ const CustomerLink = ({pace, children}:CustomerLinkProps) => {
     const href = url + '?' + params.toString();
 
     return (
-        <a href={href} target="_blank">{children}</a>
+        <a href={href} target="_blank" rel="noreferrer">{children}</a>
     )
 }
 
