@@ -1,12 +1,9 @@
-import {DivisionPaceResponse, SlowPaceResponse} from "../types";
-import {fetchJSON} from "chums-ui-utils";
-
-const paceByDivisionURL = '/api/sales/pace/chums/:year-:month';
-const slowPaceByDivisionURL = '/sage/api/pace/by-division.php';
+import type {DivisionPaceResponse, SlowPaceResponse} from "../types";
+import {fetchJSON} from "@chumsinc/ui-utils";
 
 export async function fetchByDivision(year: string, month: string): Promise<DivisionPaceResponse> {
     try {
-        const url = paceByDivisionURL
+        const url = '/api/sales/pace/chums/:year-:month'
             .replace(':year', encodeURIComponent(year))
             .replace(':month', encodeURIComponent(month));
         const response = await fetchJSON<DivisionPaceResponse>(url);
@@ -31,7 +28,7 @@ export async function fetchSlowByDivision(year: string, month: string): Promise<
         query.set('year', year);
         query.set('month', Number(month).toString());
 
-        const url = `${slowPaceByDivisionURL}?${query.toString()}`;
+        const url = `/sage/api/pace/by-division.php?${query.toString()}`;
         const response = await fetchJSON<SlowPaceResponse>(url);
         if (!response || response.error) {
             return Promise.reject(new Error(response?.error ?? 'Unable to load division pace (slow)'));

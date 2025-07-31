@@ -1,4 +1,4 @@
-import {UserProfile} from "chums-types";
+import type {SortProps, UserProfile} from "chums-types";
 
 export interface Month {
     value: string;
@@ -43,7 +43,7 @@ export interface SlowPace<T = unknown> {
 }
 
 export interface SlowPacePayload<T = unknown> {
-    invoiced: SlowPace<T>,
+    invoiced: T[],
     timestamp: string;
 }
 
@@ -61,16 +61,21 @@ export interface SlowPaceRow {
     InvoiceTotal: string | number;
 }
 
-export interface PaceState {
+export type Status = 'idle'|'loading'|'fulfilled'|'rejected';
+
+export interface PaceState<S = unknown> {
     year: string | null;
     month: string | null;
-    pace: unknown[];
-    slowPace: SlowPace<unknown>;
-    loaded: string | null;
-    fastLoading: boolean;
-    slowLoading: boolean;
-    fastError: string | null;
-    slowError: string | null;
+    status: {
+        fast: Status;
+        slow: Status;
+    }
+    errors: {
+        fast: string|null;
+        slow: string|null;
+    },
+    updated: string|null,
+    sort: SortProps<S>
 }
 
 export interface DivisionPaceRow extends DivisionKey, PaceRow {
@@ -134,3 +139,10 @@ export interface UserValidationResponse {
     roles?: boolean;
     loaded: string;
 }
+
+export interface CustomerFilter {
+    arDivisionNo?:string|null;
+    segment?: string|null;
+}
+
+export type PaceType = 'fast'|'slow';

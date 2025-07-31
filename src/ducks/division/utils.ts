@@ -1,4 +1,4 @@
-import {DivisionPaceRow, PaceRow} from "../../types";
+import type {DivisionPaceRow, PaceRow} from "../../types";
 import Decimal from "decimal.js";
 
 export const paceTotal = (pace: PaceRow, invoiced?: number | string): Decimal => {

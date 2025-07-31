@@ -1,16 +1,16 @@
-import React, {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useSelector} from "react-redux";
 import {useParams} from "react-router";
-import {selectDates} from "../ducks/app";
+import {selectDates} from "@/ducks/app";
 import Button from "react-bootstrap/Button";
 import {loadCustomers, slowLoadCustomers} from "../ducks/customer/actions";
 import {useAppDispatch} from "../app/configureStore";
 import {loadByDivision, slowLoadByDivision} from "../ducks/division/actions";
 import {loadBySegment, slowLoadBySegment} from "../ducks/segment/actions";
-import {selectExpanded, selectPaceLoading} from "../ducks/division/selectors";
-import {selectCustomerPaceLoading} from "../ducks/customer/selectors";
-import {selectSegmentsPaceLoading} from "../ducks/segment/selectors";
-import {selectProfileValid} from "../ducks/profile";
+import {selectExpanded, selectDivisionPaceLoading} from "@/ducks/division";
+import {selectCustomerPaceLoading} from "@/ducks/customer";
+import {selectSegmentsPaceLoading} from "@/ducks/segment";
+import {selectProfileValid} from "@/ducks/profile";
 
 const ReloadButton = () => {
     const dispatch = useAppDispatch();
@@ -18,7 +18,7 @@ const ReloadButton = () => {
     const dates = useSelector(selectDates);
     const params = useParams<'arDivisionNo'>();
     const expanded = useSelector(selectExpanded);
-    const divisionsLoading = useSelector(selectPaceLoading);
+    const divisionsLoading = useSelector(selectDivisionPaceLoading);
     const customersLoading = useSelector(selectCustomerPaceLoading);
     const segmentsLoading = useSelector(selectSegmentsPaceLoading);
 

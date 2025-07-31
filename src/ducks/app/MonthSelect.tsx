@@ -1,6 +1,5 @@
-import React, {ChangeEvent, useId} from 'react';
-import {useAppDispatch} from "../../app/configureStore";
-import {useSelector} from "react-redux";
+import {type ChangeEvent, useId} from 'react';
+import {useAppDispatch, useAppSelector} from "@/app/configureStore";
 import {selectMonth, setMonth} from "./index";
 import FormLabel from 'react-bootstrap/FormLabel';
 import FormSelect from 'react-bootstrap/FormSelect';
@@ -9,7 +8,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 
 const MonthSelect = () => {
     const dispatch = useAppDispatch();
-    const month = useSelector(selectMonth);
+    const month = useAppSelector(selectMonth);
     const selectId = useId();
 
 
@@ -18,7 +17,7 @@ const MonthSelect = () => {
     }
 
     return (
-        <InputGroup style={{minWidth: 'fit-content'}} >
+        <InputGroup style={{minWidth: 'fit-content'}}>
             <InputGroup.Text>
                 <FormLabel htmlFor={selectId} column="sm">Month</FormLabel>
             </InputGroup.Text>

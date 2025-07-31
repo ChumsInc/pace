@@ -3,5 +3,6 @@
 /.idea
 /public/.sass-cache
 /public/js
+/dist/
 *.map
 *.css

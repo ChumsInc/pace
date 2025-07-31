@@ -1,15 +1,14 @@
-import React from 'react';
 import {generatePath, Link, useParams} from "react-router";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
-import {divisionPath} from "../../app/constants";
-import {useSelector} from "react-redux";
-import {selectDivisions} from "../division/selectors";
+import {divisionPath} from "@/app/constants";
+import {selectDivisions} from "@/ducks//division";
 import {selectSegmentsList} from "../segment-list";
+import {useAppSelector} from "@/app/configureStore.ts";
 
-const PaceBreadcrumbs = () => {
+export default function PaceBreadcrumbs() {
     const {arDivisionNo, segment} = useParams<'arDivisionNo' | 'segment'>()
-    const divisions = useSelector(selectDivisions);
-    const segments = useSelector(selectSegmentsList);
+    const divisions = useAppSelector(selectDivisions);
+    const segments = useAppSelector(selectSegmentsList);
 
     const [currentDivision] = divisions.filter(row => row.ARDivisionNo === arDivisionNo);
     const currentSegment = segments[segment ?? ''];
@@ -35,5 +34,3 @@ const PaceBreadcrumbs = () => {
         </Breadcrumb>
     )
 }
-
-export default PaceBreadcrumbs

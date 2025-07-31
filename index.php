@@ -15,5 +15,5 @@ $ui = new WebUI2([
     'title' => 'Pace Report',
     'requiredRoles' => [Groups::PACE],
 ]);
-$ui->addManifestJSON('public/js/manifest.json')
+$ui->addViteManifest()
     ->render();

@@ -1,4 +1,4 @@
-import {Month} from "../types";
+import type {Month} from "../types";
 
 export const numeralFormat = '$ 0,0';
 
@@ -19,3 +19,5 @@ export const months:Month[] = [
 
 export const divisionPath = '/:arDivisionNo';
 export const segmentPath = '/:arDivisionNo/:segment';
+
+export const idleStates = ['idle', 'fulfilled'];

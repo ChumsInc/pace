@@ -1,11 +1,13 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {PaceArgs, SegmentPaceResponse, SlowPace, SlowPacePayload, SlowSegmentPaceRow} from "../../types";
+import type {PaceArgs, SegmentPaceResponse, SlowPace, SlowPacePayload, SlowSegmentPaceRow} from "../../types";
 import {fetchBySegment, fetchSlowBySegment} from "../../api/by-segment";
-import {RootState} from "../../app/configureStore";
+import type {RootState} from "@/app/configureStore";
 import Decimal from "decimal.js";
 import {selectSegmentsList} from "../segment-list";
 import {segmentKey} from "./utils";
-import {selectFastPaceLoading} from "./selectors";
+import {selectFastPaceStatus, selectSlowPaceStatus} from "./index";
+import {idleStates} from "@/app/constants.ts";
+import {selectProfileValid} from "@/ducks/profile";
 
 export const loadBySegment = createAsyncThunk<SegmentPaceResponse, PaceArgs>(
     'by-segment/load',
@@ -17,9 +19,11 @@ export const loadBySegment = createAsyncThunk<SegmentPaceResponse, PaceArgs>(
         }
     },
     {
-        condition: (arg, {getState}) => {
+        condition: (_, {getState}) => {
             const state = getState() as RootState;
-            return !selectFastPaceLoading(state);
+            const valid = selectProfileValid(state);
+            const status = selectFastPaceStatus(state);
+            return valid && idleStates.includes(status);
         }
     }
 )
@@ -29,36 +33,38 @@ export const slowLoadBySegment = createAsyncThunk<SlowPacePayload<SlowSegmentPac
     async (arg, thunkApi) => {
         const state = thunkApi.getState() as RootState;
         const segments = selectSegmentsList(state);
-        const response: SlowPace<SlowSegmentPaceRow> = {}
+        const invoiced: SlowPace<SlowSegmentPaceRow> = {}
 
-        const {invoiced, currentInvoiced} = await fetchSlowBySegment(arg.year, arg.month);
+        const result = await fetchSlowBySegment(arg.year, arg.month);
 
-        invoiced?.forEach(row => {
+        result.invoiced?.forEach(row => {
             const segment = segments[row.Segment ?? '']?.ReportAsType ?? row.Segment;
             const key = segmentKey({...row, Segment: segment});
-            if (!response[key]) {
-                response[key] = {...row, InvoiceTotal: 0};
+            if (!invoiced[key]) {
+                invoiced[key] = {...row, InvoiceTotal: 0};
             }
-            response[key].InvoiceTotal = new Decimal(response[key].InvoiceTotal).add(row.InvoiceTotal).toString();
+            invoiced[key].InvoiceTotal = new Decimal(invoiced[key].InvoiceTotal).add(row.InvoiceTotal).toString();
         })
 
-        currentInvoiced?.forEach(row => {
+        result.currentInvoiced?.forEach(row => {
             const segment = segments[row.Segment ?? 'NONE']?.ReportAsType ?? row.Segment ?? 'NONE';
             const key = segmentKey({...row, Segment: segment});
-            if (!response[key]) {
-                response[key] = {...row, InvoiceTotal: 0};
+            if (!invoiced[key]) {
+                invoiced[key] = {...row, InvoiceTotal: 0};
             }
-            response[key].InvoiceTotal = new Decimal(response[key].InvoiceTotal).add(row.InvoiceTotal).toString();
+            invoiced[key].InvoiceTotal = new Decimal(invoiced[key].InvoiceTotal).add(row.InvoiceTotal).toString();
         });
         return {
-            invoiced: response,
-            timestamp: new Date().toISOString(),
+            invoiced: Object.values(invoiced),
+            timestamp: result.timestamp,
         };
     },
     {
-        condition: (arg, {getState}) => {
+        condition: (_, {getState}) => {
             const state = getState() as RootState;
-            return !selectFastPaceLoading(state);
+            const valid = selectProfileValid(state);
+            const status = selectSlowPaceStatus(state);
+            return valid && idleStates.includes(status);
         }
     }
 

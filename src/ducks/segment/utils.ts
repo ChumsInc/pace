@@ -1,4 +1,4 @@
-import {PaceRow, SlowSegmentPaceRow} from "../../types";
+import type {PaceRow, SegmentPaceRow, SlowSegmentPaceRow} from "../../types";
 import Decimal from "decimal.js";
 
 export const paceTotal = (pace: PaceRow, invoiced?: number | string): Decimal => {
@@ -20,4 +20,4 @@ export const paceTotal = (pace: PaceRow, invoiced?: number | string): Decimal =>
 //     }
 // }
 
-export const segmentKey = (row: SlowSegmentPaceRow) => [row.ARDivisionNo, row.Segment].filter(val => !!val).join(':');
+export const segmentKey = (row: SegmentPaceRow|SlowSegmentPaceRow) => [row.ARDivisionNo, row.Segment].filter(val => !!val).join(':').toUpperCase();

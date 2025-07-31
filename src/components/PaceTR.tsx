@@ -1,5 +1,5 @@
-import React, {CSSProperties, HTMLAttributes} from 'react';
-import {PaceRow} from "../types";
+import React, {type CSSProperties, type HTMLAttributes} from 'react';
+import type {PaceRow} from "../types";
 import Decimal from "decimal.js";
 import NumericTD from "./NumericTD";
 import numeral from "numeral";

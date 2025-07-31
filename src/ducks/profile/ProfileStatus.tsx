@@ -1,5 +1,5 @@
-import React, {useEffect, useRef} from 'react';
-import {useAppDispatch} from "../../app/configureStore";
+import {useEffect, useRef} from 'react';
+import {useAppDispatch} from "@/app/configureStore";
 import {useSelector} from "react-redux";
 import {loadUserValidation, selectProfileError, selectProfileLoading, selectProfileValid} from "./index";
 import Alert from "react-bootstrap/Alert";
@@ -15,7 +15,7 @@ const ProfileStatus = () => {
 
     useEffect(() => {
         dispatch(loadUserValidation());
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         if (valid) {
@@ -26,7 +26,7 @@ const ProfileStatus = () => {
         return () => {
             window.clearTimeout(intervalHandle.current);
         }
-    }, [valid, loading]);
+    }, [valid, loading, dispatch]);
 
     return (
         <div className="mt-1">

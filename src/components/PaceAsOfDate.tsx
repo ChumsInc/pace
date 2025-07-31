@@ -1,26 +1,18 @@
-import React from 'react';
-import {FormControl} from "react-bootstrap";
+import dayjs from "dayjs";
+import {useAppSelector} from "@/app/configureStore.ts";
+import {selectUpdated} from "@/ducks/app";
 
-const friendlyDate = (d:Date|string|number) => {
-    const date = new Date(d);
-    const now = new Date();
-    if (date.toDateString() === now.toDateString()) {
-        return date.toLocaleTimeString();
-    }
-    return d.toLocaleString();
-}
-
-const PaceAsOfDate = ({updated}:PaceAsOfDateProps) => {
+const PaceAsOfDate = () => {
+    const updated = useAppSelector(selectUpdated);
     if (!updated) {
         return null;
     }
     return (
-        <FormControl plaintext readOnly defaultValue={`Last Updated: ${friendlyDate(updated)}`}  />
+        <div>
+            <span className="me-3 text-secondary"> Last Updated:</span>
+            <span>{dayjs(updated).format('hh:mm a')}</span>
+        </div>
     )
 }
 
 export default PaceAsOfDate;
-
-export interface PaceAsOfDateProps {
-    updated: string|null;
-}

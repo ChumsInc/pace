@@ -1,19 +1,16 @@
-import {Segment, SegmentList, SegmentPaceResponse, SlowPaceResponse, SlowSegmentPaceRow} from "../types";
-import {fetchJSON} from "chums-ui-utils";
+import type {Segment, SegmentList, SegmentPaceResponse, SlowPaceResponse, SlowSegmentPaceRow} from "../types";
+import {fetchJSON} from "@chumsinc/ui-utils";
 
-
-const paceBySegmentURL = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/segment';
-const slowPaceBySegmentURL = '/sage/api/pace/by-segment.php';
 
 export async function fetchSegments(): Promise<SegmentList> {
     try {
         const segments = await fetchJSON<Segment[]>('/api/sales/customer-types');
         const list: SegmentList = {};
         segments?.forEach(row => {
-                if (row.CustomerType) {
-                    list[row.CustomerType] = row;
-                }
-            });
+            if (row.CustomerType) {
+                list[row.CustomerType] = row;
+            }
+        });
         return list;
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -27,7 +24,7 @@ export async function fetchSegments(): Promise<SegmentList> {
 
 export async function fetchBySegment(year: string, month: string, ARDivisionNo: string = '%'): Promise<SegmentPaceResponse> {
     try {
-        const url = paceBySegmentURL
+        const url = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/segment'
             .replace(':year', encodeURIComponent(year))
             .replace(':month', encodeURIComponent(month))
             .replace(':ARDivisionNo', encodeURIComponent(ARDivisionNo));
@@ -54,12 +51,15 @@ export async function fetchSlowBySegment(year: string, month: string): Promise<S
         query.set('year', year);
         query.set('month', Number(month).toString());
 
-        const url = `${slowPaceBySegmentURL}?${query.toString()}`;
+        const url = `/sage/api/pace/by-segment.php?${query.toString()}`;
         const response = await fetchJSON<SlowPaceResponse<SlowSegmentPaceRow>>(url);
         if (!response || response.error) {
             return Promise.reject(new Error(response?.error ?? 'Unable to load customer pace'));
         }
-        return response;
+        return {
+            ...response,
+            timestamp: new Date().toISOString()
+        };
 
     } catch (err: unknown) {
         if (err instanceof Error) {

@@ -1,4 +1,4 @@
-import React, {HTMLAttributes} from 'react';
+import {type HTMLAttributes} from 'react';
 import classNames from "classnames";
 import numeral from "numeral";
 import {numeralFormat} from "../app/constants";

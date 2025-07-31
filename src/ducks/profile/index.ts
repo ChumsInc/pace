@@ -1,8 +1,8 @@
-import {UserProfile} from "chums-types";
-import {createAsyncThunk, createReducer} from "@reduxjs/toolkit";
-import {UserValidationResponse} from "../../types";
+import type {UserProfile} from "chums-types";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import type {UserValidationResponse} from "../../types";
 import {fetchUserValidation} from "../../api/user";
-import {RootState} from "../../app/configureStore";
+import type {RootState} from "@/app/configureStore";
 
 export interface ProfileState {
     valid: boolean;
@@ -20,43 +20,58 @@ export const initialProfileState: ProfileState = {
     error: null,
 }
 
-export const selectProfileValid = (state:RootState) => state.profile.valid;
-export const selectProfileLoading = (state:RootState) => state.profile.loading;
-export const selectProfileError = (state:RootState) => state.profile.error;
+const profileSlice = createSlice({
+    name: 'profile',
+    initialState: initialProfileState,
+    reducers: {
+        dismissProfileError: (state) => {
+            state.error = null;
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(loadUserValidation.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(loadUserValidation.fulfilled, (state, action) => {
+                state.loading = false;
+                state.valid = action.payload.valid ?? false;
+                state.user = action.payload.profile ?? null;
+                state.loaded = action.payload.loaded;
+                state.error = null;
+            })
+            .addCase(loadUserValidation.rejected, (state, action) => {
+                state.loading = false;
+                state.valid = false;
+                state.user = null;
+                state.error = action.error.message ?? null;
+            })
+    },
+    selectors: {
+        selectProfileValid: (state) => state.valid,
+        selectProfileLoading: (state) => state.loading,
+        selectProfileError: (state) => state.error,
+    }
+});
 
-export const loadUserValidation = createAsyncThunk<UserValidationResponse>(
+export default profileSlice;
+
+export const {dismissProfileError} = profileSlice.actions;
+export const {selectProfileValid, selectProfileLoading, selectProfileError} = profileSlice.selectors;
+
+
+export const loadUserValidation = createAsyncThunk<UserValidationResponse, void, { state: RootState }>(
     'user/validate',
     async () => {
         const res = await fetchUserValidation();
         res.loaded = new Date().toISOString();
         return res;
     }, {
-        condition: (arg, {getState}) => {
-            const state = getState() as RootState;
+        condition: (_, {getState}) => {
+            const state = getState();
             return !selectProfileLoading(state);
         }
     }
 )
 
-const profileReducer = createReducer(initialProfileState, (builder) => {
-    builder
-        .addCase(loadUserValidation.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-        })
-        .addCase(loadUserValidation.fulfilled, (state, action) => {
-            state.loading = false;
-            state.valid = action.payload.valid ?? false;
-            state.user = action.payload.profile ?? null;
-            state.loaded = action.payload.loaded;
-            state.error = null;
-        })
-        .addCase(loadUserValidation.rejected, (state, action) => {
-            state.loading = false;
-            state.valid = false;
-            state.user = null;
-            state.error = action.error.message ?? null;
-        })
-});
-
-export default profileReducer;

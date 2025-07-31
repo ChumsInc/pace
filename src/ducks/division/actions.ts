@@ -1,9 +1,11 @@
 import {createAction, createAsyncThunk} from "@reduxjs/toolkit";
-import {DivisionPaceResponse, PaceArgs, SlowDivisionPaceRow, SlowPace, SlowPacePayload} from "../../types";
+import type {DivisionPaceResponse, PaceArgs, SlowDivisionPaceRow, SlowPace, SlowPacePayload} from "../../types";
 import {fetchByDivision, fetchSlowByDivision} from "../../api/by-division";
 import Decimal from "decimal.js";
-import {RootState} from "../../app/configureStore";
-import {selectFastPaceLoading, selectSlowPaceLoading} from "./selectors";
+import type {RootState} from "@/app/configureStore";
+import {selectFastPaceStatus, selectSlowPaceStatus} from "./index";
+import {idleStates} from "@/app/constants.ts";
+import {selectProfileValid} from "@/ducks/profile";
 
 export const loadByDivision = createAsyncThunk<DivisionPaceResponse, PaceArgs>(
     'by-division/load',
@@ -15,9 +17,11 @@ export const loadByDivision = createAsyncThunk<DivisionPaceResponse, PaceArgs>(
         }
     },
     {
-        condition: (arg, {getState}) => {
+        condition: (_, {getState}) => {
             const state = getState() as RootState;
-            return !selectFastPaceLoading(state);
+            const valid = selectProfileValid(state);
+            const status = selectFastPaceStatus(state);
+            return valid && idleStates.includes(status);
         }
     }
 )
@@ -25,26 +29,28 @@ export const loadByDivision = createAsyncThunk<DivisionPaceResponse, PaceArgs>(
 export const slowLoadByDivision = createAsyncThunk<SlowPacePayload<SlowDivisionPaceRow>, PaceArgs>(
     'by-division/slow-load',
     async (arg) => {
-        const {invoiced, currentInvoiced} = await fetchSlowByDivision(arg.year, arg.month);
-        const slowPace: SlowPace<SlowDivisionPaceRow> = {};
-        invoiced?.forEach(row => {
-            slowPace[row.ARDivisionNo] = row;
+        const response = await fetchSlowByDivision(arg.year, arg.month);
+        const invoiced: SlowPace<SlowDivisionPaceRow> = {};
+        response?.invoiced?.forEach(row => {
+            invoiced[row.ARDivisionNo] = row;
         });
-        currentInvoiced?.forEach(row => {
-            if (!slowPace[row.ARDivisionNo]) {
-                slowPace[row.ARDivisionNo] = {ARDivisionNo: row.ARDivisionNo, InvoiceTotal: 0};
+        response?.currentInvoiced?.forEach(row => {
+            if (!invoiced[row.ARDivisionNo]) {
+                invoiced[row.ARDivisionNo] = {ARDivisionNo: row.ARDivisionNo, InvoiceTotal: 0};
             }
-            slowPace[row.ARDivisionNo].InvoiceTotal = new Decimal(slowPace[row.ARDivisionNo]?.InvoiceTotal ?? 0).add(row.InvoiceTotal).toString();
+            invoiced[row.ARDivisionNo].InvoiceTotal = new Decimal(invoiced[row.ARDivisionNo]?.InvoiceTotal ?? 0).add(row.InvoiceTotal).toString();
         });
         return {
-            invoiced: slowPace,
+            invoiced: Object.values((invoiced)),
             timestamp: new Date().toISOString(),
         }
     },
     {
-        condition: (arg, {getState}) => {
+        condition: (_, {getState}) => {
             const state = getState() as RootState;
-            return !selectSlowPaceLoading(state);
+            const valid = selectProfileValid(state);
+            const status = selectSlowPaceStatus(state);
+            return valid && idleStates.includes(status);
         }
     }
 )

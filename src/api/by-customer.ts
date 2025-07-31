@@ -1,13 +1,10 @@
-import {CustomerPaceResponse, SlowCustomerPaceRow, SlowPaceResponse} from "../types";
-import {fetchJSON} from "chums-ui-utils";
+import type  {CustomerPaceResponse, SlowCustomerPaceRow, SlowPaceResponse} from "../types";
+import {fetchJSON} from "@chumsinc/ui-utils";
 
-
-const paceByCustomerURL = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/customer';
-const slowPaceByCustomerURL = '/sage/api/pace/by-customer.php';
 
 export async function fetchByCustomer(year: string, month: string, ARDivisionNo: string): Promise<CustomerPaceResponse> {
     try {
-        const url = paceByCustomerURL
+        const url = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/customer'
             .replace(':year', encodeURIComponent(year))
             .replace(':month', encodeURIComponent(month))
             .replace(':ARDivisionNo', encodeURIComponent(ARDivisionNo));
@@ -34,7 +31,7 @@ export async function fetchSlowByCustomer(year: string, month: string, ARDivisio
         query.set('month', Number(month).toString());
         query.set('ARDivisionNo', ARDivisionNo);
 
-        const url = `${slowPaceByCustomerURL}?${query.toString()}`;
+        const url = `/sage/api/pace/by-customer.php?${query.toString()}`;
         const response = await fetchJSON<SlowPaceResponse<SlowCustomerPaceRow>>(url);
         if (!response || response.error) {
             return Promise.reject(new Error(response?.error ?? 'Unable to load customer pace (slow)'));

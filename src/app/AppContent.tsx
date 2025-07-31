@@ -1,4 +1,3 @@
-import React from 'react';
 import AppBar from "../ducks/app/AppBar";
 import {Outlet} from "react-router";
 import LoadingBar from "../components/LoadingBar";
