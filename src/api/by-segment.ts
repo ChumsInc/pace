@@ -4,7 +4,7 @@ import {fetchJSON} from "@chumsinc/ui-utils";
 
 export async function fetchSegments(): Promise<SegmentList> {
     try {
-        const segments = await fetchJSON<Segment[]>('/api/sales/customer-types');
+        const segments = await fetchJSON<Segment[]>('/api/sales/customer-types.json');
         const list: SegmentList = {};
         segments?.forEach(row => {
             if (row.CustomerType) {
@@ -24,9 +24,10 @@ export async function fetchSegments(): Promise<SegmentList> {
 
 export async function fetchBySegment(year: string, month: string, ARDivisionNo: string = '%'): Promise<SegmentPaceResponse> {
     try {
-        const url = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/segment'
-            .replace(':year', encodeURIComponent(year))
-            .replace(':month', encodeURIComponent(month))
+        const params = new URLSearchParams();
+        params.set('year', year);
+        params.set('month', month);
+        const url = `/api/sales/pace/:ARDivisionNo/segment.json?${params.toString()}`
             .replace(':ARDivisionNo', encodeURIComponent(ARDivisionNo));
         const response = await fetchJSON<SegmentPaceResponse>(url);
         if (!response || response.error) {

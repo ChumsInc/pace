@@ -4,9 +4,10 @@ import {fetchJSON} from "@chumsinc/ui-utils";
 
 export async function fetchByCustomer(year: string, month: string, ARDivisionNo: string): Promise<CustomerPaceResponse> {
     try {
-        const url = '/api/sales/pace/chums/:year-:month/:ARDivisionNo/customer'
-            .replace(':year', encodeURIComponent(year))
-            .replace(':month', encodeURIComponent(month))
+        const params = new URLSearchParams();
+        params.set('year', year);
+        params.set('month', month);
+        const url = `/api/sales/pace/:ARDivisionNo/customer.json?${params.toString()}`
             .replace(':ARDivisionNo', encodeURIComponent(ARDivisionNo));
         const response = await fetchJSON<CustomerPaceResponse>(url);
         if (!response || response.error) {

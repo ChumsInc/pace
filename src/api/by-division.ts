@@ -3,9 +3,10 @@ import {fetchJSON} from "@chumsinc/ui-utils";
 
 export async function fetchByDivision(year: string, month: string): Promise<DivisionPaceResponse> {
     try {
-        const url = '/api/sales/pace/chums/:year-:month'
-            .replace(':year', encodeURIComponent(year))
-            .replace(':month', encodeURIComponent(month));
+        const params = new URLSearchParams();
+        params.set('year', year);
+        params.set('month', month);
+        const url = `/api/sales/pace/chums.json?${params.toString()}`;
         const response = await fetchJSON<DivisionPaceResponse>(url);
         if (!response || response.error) {
             return Promise.reject(new Error(response?.error ?? 'Unable to load division pace'));
