@@ -2,11 +2,14 @@ import type  {CustomerPaceResponse, SlowCustomerPaceRow, SlowPaceResponse} from 
 import {fetchJSON} from "@chumsinc/ui-utils";
 
 
-export async function fetchByCustomer(year: string, month: string, ARDivisionNo: string): Promise<CustomerPaceResponse> {
+export async function fetchByCustomer(year: string, month: string, ARDivisionNo: string, refresh?: boolean): Promise<CustomerPaceResponse> {
     try {
         const params = new URLSearchParams();
         params.set('year', year);
         params.set('month', month);
+        if (refresh) {
+            params.set('refresh', '1')
+        }
         const url = `/api/sales/pace/:ARDivisionNo/customer.json?${params.toString()}`
             .replace(':ARDivisionNo', encodeURIComponent(ARDivisionNo));
         const response = await fetchJSON<CustomerPaceResponse>(url);

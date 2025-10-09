@@ -37,7 +37,7 @@ const PaceByCustomer = () => {
         }
         loadHandler({...dates, ARDivisionNo: arDivisionNo}, shouldLoadSlowPace);
         timer.current = window.setInterval(() => {
-            loadHandler({...dates, ARDivisionNo: arDivisionNo}, shouldLoadSlowPace);
+            loadHandler({...dates, ARDivisionNo: arDivisionNo, refresh: true}, shouldLoadSlowPace);
         }, 10 * 60 * 1000);
         return () => {
             window.clearInterval(timer.current);

@@ -12,7 +12,7 @@ import {selectProfileValid} from "@/ducks/profile";
 export const loadBySegment = createAsyncThunk<SegmentPaceResponse, PaceArgs>(
     'by-segment/load',
     async (arg) => {
-        const {pace} = await fetchBySegment(arg.year, arg.month, arg.ARDivisionNo);
+        const {pace} = await fetchBySegment(arg.year, arg.month, arg.ARDivisionNo, arg.refresh);
         return {
             pace,
             timestamp: new Date().toISOString(),

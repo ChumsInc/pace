@@ -22,11 +22,14 @@ export async function fetchSegments(): Promise<SegmentList> {
     }
 }
 
-export async function fetchBySegment(year: string, month: string, ARDivisionNo: string = '%'): Promise<SegmentPaceResponse> {
+export async function fetchBySegment(year: string, month: string, ARDivisionNo: string = '%', refresh?: boolean): Promise<SegmentPaceResponse> {
     try {
         const params = new URLSearchParams();
         params.set('year', year);
         params.set('month', month);
+        if (refresh) {
+            params.set('refresh', '1')
+        }
         const url = `/api/sales/pace/:ARDivisionNo/segment.json?${params.toString()}`
             .replace(':ARDivisionNo', encodeURIComponent(ARDivisionNo));
         const response = await fetchJSON<SegmentPaceResponse>(url);

@@ -32,7 +32,7 @@ const PaceByDivision = () => {
         }
         loadHandler(dates, shouldLoadSlowPace);
         timerRef.current = window.setInterval(() => {
-            loadHandler(dates, shouldLoadSlowPace)
+            loadHandler({...dates, refresh: true}, shouldLoadSlowPace)
         }, 10 * 60 * 1000);
         return () => {
             window.clearInterval(timerRef.current);

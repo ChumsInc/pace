@@ -10,7 +10,7 @@ import {selectProfileValid} from "@/ducks/profile";
 export const loadByDivision = createAsyncThunk<DivisionPaceResponse, PaceArgs>(
     'by-division/load',
     async (arg) => {
-        const {pace = []} = await fetchByDivision(arg.year, arg.month);
+        const {pace = []} = await fetchByDivision(arg.year, arg.month, arg.refresh);
         return {
             pace,
             timestamp: new Date().toISOString(),

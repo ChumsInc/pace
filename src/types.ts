@@ -11,6 +11,7 @@ export interface PaceArgs {
     ARDivisionNo?: string;
     Segment?: string;
     CustomerNo?: string;
+    refresh?: boolean;
 }
 
 export interface DivisionKey {

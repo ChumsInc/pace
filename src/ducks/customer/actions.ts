@@ -12,7 +12,7 @@ import {idleStates} from "@/app/constants.ts";
 export const loadCustomers = createAsyncThunk<CustomerPaceResponse, PaceArgs>(
     'customers/load',
     async (arg) => {
-        const {pace} = await fetchByCustomer(arg.year, arg.month, arg.ARDivisionNo ?? '00');
+        const {pace} = await fetchByCustomer(arg.year, arg.month, arg.ARDivisionNo ?? '00', arg.refresh);
         return {
             pace,
             timestamp: new Date().toISOString(),

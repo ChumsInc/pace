@@ -1,11 +1,14 @@
 import type {DivisionPaceResponse, SlowPaceResponse} from "../types";
 import {fetchJSON} from "@chumsinc/ui-utils";
 
-export async function fetchByDivision(year: string, month: string): Promise<DivisionPaceResponse> {
+export async function fetchByDivision(year: string, month: string, refresh?: boolean): Promise<DivisionPaceResponse> {
     try {
         const params = new URLSearchParams();
         params.set('year', year);
         params.set('month', month);
+        if (refresh) {
+            params.set('refresh', '1')
+        }
         const url = `/api/sales/pace/chums.json?${params.toString()}`;
         const response = await fetchJSON<DivisionPaceResponse>(url);
         if (!response || response.error) {
