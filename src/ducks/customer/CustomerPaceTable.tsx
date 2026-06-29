@@ -1,6 +1,4 @@
 import {customerFields} from "@/ducks/customer/CustomerFields.tsx";
-import classNames from "classnames";
-import TableSortLabel from "@/components/TableSortLabel.tsx";
 import {customerKey, filterCustomerPace} from "@/ducks/customer/utils.ts";
 import numeral from "numeral";
 import {numeralFormat} from "@/app/constants.ts";
@@ -12,6 +10,8 @@ import {useAppDispatch} from "@/app/configureStore.ts";
 import {useEffect, useState} from "react";
 import {paceReducer, zeroTotal} from "@/src/utils.ts";
 import {useParams} from "react-router";
+import {DataTableRow, SortableTableTH} from "@chumsinc/sortable-tables";
+import type {SortProps} from "chums-types";
 
 export default function CustomerPaceTable() {
     const dispatch = useAppDispatch();
@@ -28,47 +28,24 @@ export default function CustomerPaceTable() {
         setTotal(total);
     }, [pace, arDivisionNo, segment]);
 
-    const sortChangeHandler = (field: keyof CustomerPaceRow) => {
-        if (sort.field === field) {
-            return dispatch(setSort({...sort, ascending: !sort.ascending}));
-        }
-        dispatch(setSort({field, ascending: true}));
+    const sortChangeHandler = (nextSort: SortProps<CustomerPaceRow>) => {
+        dispatch(setSort(nextSort));
     }
 
     return (
         <Table size="small">
             <thead>
-            <tr style={{fontWeight: 700, fontSize: '1rem', color: 'var(--bs-body-color)'}}>
+            <tr style={{fontWeight: 700, fontSize: '1rem'}}>
                 {customerFields.map((field, index) => (
-                    <th key={index} className={classNames({[`text-${field.align}`]: !!field.align})}>
-                        <TableSortLabel
-                            active={sort.field === field.field}
-                            iconBefore={field.align !== 'end'}
-                            align={field.align}
-                            direction={sort.field === field.field ? (sort.ascending ? 'asc' : 'desc') : 'asc'}
-                            onClick={() => sortChangeHandler(field.field)}>
-                            {field.title}
-                        </TableSortLabel>
-                    </th>
+                    <SortableTableTH field={field} onClick={sortChangeHandler} key={index}
+                                     sorted={field.field === sort.field} ascending={sort.ascending}/>
                 ))}
             </tr>
             </thead>
             <tbody>
-            {filtered
-                .map(row => (
-                    <tr key={customerKey(row)}>
-                        {customerFields.map((field, index) => (
-                            <td key={index} className={classNames({[`text-${field.align}`]: !!field.align})}>
-                                {!!field.render && (
-                                    <>{field.render(row)}</>
-                                )}
-                                {!field.render && (
-                                    <>{row[field.field]}</>
-                                )}
-                            </td>
-                        ))}
-                    </tr>
-                ))}
+            {filtered.map(row => (
+                <DataTableRow key={customerKey(row)} row={row} fields={customerFields}/>
+            ))}
             </tbody>
             <tfoot>
             <tr style={{fontWeight: 700, fontSize: '1rem', color: 'var(--bs-body-color)'}}>
