@@ -1,51 +1,61 @@
-import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {type ReactNode, startTransition, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import VersionContext, {type VersionContextState} from "@/components/version/VersionContext.tsx";
 import {fetchJSON} from "@chumsinc/ui-utils";
 
 export interface VersionProviderProps {
     children: ReactNode;
     defaultInterval?: number;
+    onError?: (error: string) => void;
 }
 
 interface VersionResponse {
     version: string;
 }
 
-export default function VersionProvider({children, defaultInterval}:VersionProviderProps) {
+export default function VersionProvider({children, defaultInterval, onError}:VersionProviderProps) {
     const [version, setVersion] = useState<string|null>(null);
     const [status, setStatus] = useState<VersionContextState['status']>('idle');
-    const [error, setError] = useState<string|null>(null);
+    const [hasUpdate, setHasUpdate] = useState<boolean>(false);
     const intervalRef = useRef<number>(0);
     const abortController = useRef<AbortController|null>(null);
 
     const loadVersion = useCallback(async () => {
         try {
+            if (!window.navigator.onLine) {
+                return;
+            }
             abortController.current = new AbortController();
             setStatus('loading');
             const res = await fetchJSON<VersionResponse>('./package.json', {
                 cache: 'no-store',
                 signal: abortController.current.signal
             });
-            setStatus('idle');
-            if (!version) {
-                setVersion(res?.version ?? null);
-            } else if (res?.version !== version) {
-                setStatus('has-update');
-            }
             abortController.current = null;
-        } catch(err:unknown) {
-            setStatus('error');
-            if (err instanceof Error) {
-                setError(err.message);
+            setStatus('idle');
+
+            if (!version) {
+                // handle initial load version
+                setVersion(res?.version ?? null);
+                setHasUpdate(false);
                 return;
             }
-            setError('Error in loadVersion');
+
+            if (res?.version && res.version !== version) {
+                setHasUpdate(true);
+            }
+        } catch(err:unknown) {
+            if (onError) {
+                onError(err instanceof Error ? err.message : 'Error in VersionProvider.loadVersion()');
+            }
+            setStatus('idle');
         }
-    }, []);
+    }, [version, onError]);
 
     useEffect(() => {
-        loadVersion().catch(console.error);
-        intervalRef.current = window.setInterval(loadVersion, defaultInterval ?? 60 * 60 * 1000);
+        startTransition(() => {
+            loadVersion().catch(console.error);
+            intervalRef.current = window.setInterval(loadVersion, defaultInterval ?? 60 * 60 * 1000);
+        })
         return () => {
             if (intervalRef.current) {
                 window.clearInterval(intervalRef.current);
@@ -57,21 +67,20 @@ export default function VersionProvider({children, defaultInterval}:VersionProvi
         if (abortController.current) {
             abortController.current.abort('User clicked reload button');
         }
-        if (status === 'has-update') {
-            window.location.reload();
-            return;
-        }
+        // clear the interval and start a new timer
+        window.clearInterval(intervalRef.current);
         loadVersion().catch(console.error);
-    }, [status]);
+        intervalRef.current = window.setInterval(loadVersion, defaultInterval ?? 60 * 60 * 1000);
+    }, [loadVersion, defaultInterval]);
 
     const value:VersionContextState = useMemo(() => {
         return {
             version,
             status,
-            error,
+            hasUpdate,
             onClick: clickHandler
         }
-    }, [clickHandler, version, status, error])
+    }, [clickHandler, version, status, hasUpdate])
 
     return  (
         <VersionContext value={value}>

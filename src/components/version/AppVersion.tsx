@@ -5,15 +5,16 @@ import Stack from "react-bootstrap/Stack";
 import VersionUpdateToast from "@/components/version/VersionUpdateToast.tsx";
 
 export interface AppVersionProps {
-    children?: ReactNode;
+    versionComponent?: ReactNode;
+    toastComponent?: ReactNode;
     defaultInterval?: number;
 }
-export default function AppVersion({children, defaultInterval}:AppVersionProps) {
+export default function AppVersion({versionComponent, toastComponent, defaultInterval}:AppVersionProps) {
     return (
         <VersionProvider defaultInterval={defaultInterval}>
             <Stack direction="horizontal" gap={2}>
-                {children || <CurrentVersion/>}
-                <VersionUpdateToast />
+                {versionComponent || <CurrentVersion/>}
+                {toastComponent || <VersionUpdateToast/>}
             </Stack>
         </VersionProvider>
     )

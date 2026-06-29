@@ -2,9 +2,9 @@ import {createContext} from "react";
 
 export interface VersionContextState {
     version: string|null;
-    onClick: () => void;
+    hasUpdate: boolean;
     status: 'idle' | 'loading' | 'success' | 'has-update' | 'error';
-    error?: string | null;
+    onClick: () => void;
 }
 
 const VersionContext = createContext<VersionContextState | null>(null);

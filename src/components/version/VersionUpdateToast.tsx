@@ -3,15 +3,15 @@ import {Toast, ToastContainer} from "react-bootstrap";
 import {startTransition, useEffect, useState} from "react";
 
 export default function VersionUpdateToast() {
-    const {status} = useVersion();
+    const {hasUpdate} = useVersion();
     const [show, setShow] = useState(false);
     useEffect(() => {
         startTransition(() => {
-            if (status === 'has-update') {
+            if (hasUpdate) {
                 setShow(true);
             }
         })
-    }, [status]);
+    }, [hasUpdate]);
 
     const closeHandler = () => {
         setShow(false);
