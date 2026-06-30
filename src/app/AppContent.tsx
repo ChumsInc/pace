@@ -13,7 +13,7 @@ const AppContent = () => {
             <PaceBreadcrumbs/>
             <LoadingBar/>
             <Outlet/>
-            <AppVersion defaultInterval={1000 * 60}/>
+            <AppVersion />
         </div>
     )
 }
